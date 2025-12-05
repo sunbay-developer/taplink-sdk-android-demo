@@ -2,6 +2,7 @@ package com.sunmi.tapro.taplink.demo.pages
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -118,65 +119,26 @@ fun SaleTransactionPage(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // 支付方式选择
-                ExposedDropdownMenuBox(
-                    expanded = showPaymentMethodMenu,
-                    onExpandedChange = {
-                        if (!isProcessing) {
-                            showPaymentMethodMenu = !showPaymentMethodMenu
-                        }
-                    }
+                // 支付方式选择（一行两个）
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    OutlinedTextField(
-                        value = selectedPaymentCategory.toApiString(),
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("支付方式") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = showPaymentMethodMenu) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor(),
-                        enabled = !isProcessing,
-                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
-                    )
-
-                    ExposedDropdownMenu(
-                        expanded = showPaymentMethodMenu,
-                        onDismissRequest = { showPaymentMethodMenu = false }
-                    ) {
-                        paymentCategories.forEach { category ->
-                            DropdownMenuItem(
-                                text = { Text(category.toApiString()) },
-                                onClick = {
-                                    selectedPaymentCategory = category
-                                    // 如果不是EBT，清除子支付方式
-                                    if (category != PaymentCategory.EBT) {
-                                        selectedSubPaymentId = null
-                                    }
-                                    showPaymentMethodMenu = false
-                                }
-                            )
-                        }
-                    }
-                }
-
-                // 如果选择了EBT，显示子支付方式选择
-                if (selectedPaymentCategory == PaymentCategory.EBT) {
                     ExposedDropdownMenuBox(
-                        expanded = showSubPaymentMenu,
+                        expanded = showPaymentMethodMenu,
                         onExpandedChange = {
                             if (!isProcessing) {
-                                showSubPaymentMenu = !showSubPaymentMenu
+                                showPaymentMethodMenu = !showPaymentMethodMenu
                             }
-                        }
+                        },
+                        modifier = Modifier.weight(1f)
                     ) {
                         OutlinedTextField(
-                            value = selectedSubPaymentId?.name ?: "",
+                            value = selectedPaymentCategory.toApiString(),
                             onValueChange = {},
                             readOnly = true,
-                            label = { Text("EBT 具体支付方式 *") },
-                            placeholder = { Text("请选择 EBT 支付方式") },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = showSubPaymentMenu) },
+                            label = { Text("支付方式") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = showPaymentMethodMenu) },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .menuAnchor(),
@@ -185,17 +147,63 @@ fun SaleTransactionPage(
                         )
 
                         ExposedDropdownMenu(
-                            expanded = showSubPaymentMenu,
-                            onDismissRequest = { showSubPaymentMenu = false }
+                            expanded = showPaymentMethodMenu,
+                            onDismissRequest = { showPaymentMethodMenu = false }
                         ) {
-                            ebtSubPaymentIds.forEach { subId ->
+                            paymentCategories.forEach { category ->
                                 DropdownMenuItem(
-                                    text = { Text(subId?.name ?: "不选择") },
+                                    text = { Text(category.toApiString()) },
                                     onClick = {
-                                        selectedSubPaymentId = subId
-                                        showSubPaymentMenu = false
+                                        selectedPaymentCategory = category
+                                        // 如果不是EBT，清除子支付方式
+                                        if (category != PaymentCategory.EBT) {
+                                            selectedSubPaymentId = null
+                                        }
+                                        showPaymentMethodMenu = false
                                     }
                                 )
+                            }
+                        }
+                    }
+
+                    // 如果选择了EBT，显示子支付方式选择
+                    if (selectedPaymentCategory == PaymentCategory.EBT) {
+                        ExposedDropdownMenuBox(
+                            expanded = showSubPaymentMenu,
+                            onExpandedChange = {
+                                if (!isProcessing) {
+                                    showSubPaymentMenu = !showSubPaymentMenu
+                                }
+                            },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            OutlinedTextField(
+                                value = selectedSubPaymentId?.name ?: "",
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("EBT 具体支付方式 *") },
+                                placeholder = { Text("请选择") },
+                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = showSubPaymentMenu) },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .menuAnchor(),
+                                enabled = !isProcessing,
+                                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+                            )
+
+                            ExposedDropdownMenu(
+                                expanded = showSubPaymentMenu,
+                                onDismissRequest = { showSubPaymentMenu = false }
+                            ) {
+                                ebtSubPaymentIds.forEach { subId ->
+                                    DropdownMenuItem(
+                                        text = { Text(subId?.name ?: "不选择") },
+                                        onClick = {
+                                            selectedSubPaymentId = subId
+                                            showSubPaymentMenu = false
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
@@ -241,53 +249,59 @@ fun SaleTransactionPage(
                     enabled = !isProcessing
                 )
 
-                // 小费金额输入（可选）
-                OutlinedTextField(
-                    value = tipAmount,
-                    onValueChange = { tipAmount = it },
-                    label = { Text("小费金额 (USD)") },
-                    placeholder = { Text("可选，不填则为0") },
+                // 小费金额和税额输入（一行两个）
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    enabled = !isProcessing
-                )
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedTextField(
+                        value = tipAmount,
+                        onValueChange = { tipAmount = it },
+                        label = { Text("小费金额 (USD)") },
+                        placeholder = { Text("可选") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        enabled = !isProcessing
+                    )
+                    OutlinedTextField(
+                        value = taxAmount,
+                        onValueChange = { taxAmount = it },
+                        label = { Text("税额 (USD)") },
+                        placeholder = { Text("可选") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        enabled = !isProcessing
+                    )
+                }
 
-                // 税额输入（可选）
-                OutlinedTextField(
-                    value = taxAmount,
-                    onValueChange = { taxAmount = it },
-                    label = { Text("税额 (USD)") },
-                    placeholder = { Text("可选，不填则为0") },
+                // 附加费和现金返还输入（一行两个）
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    enabled = !isProcessing
-                )
-
-                // 附加费输入（可选）
-                OutlinedTextField(
-                    value = surchargeAmount,
-                    onValueChange = { surchargeAmount = it },
-                    label = { Text("附加费 (USD)") },
-                    placeholder = { Text("可选，不填则为0") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    enabled = !isProcessing
-                )
-
-                // 现金返还金额输入（可选）
-                OutlinedTextField(
-                    value = cashbackAmount,
-                    onValueChange = { cashbackAmount = it },
-                    label = { Text("现金返还 (USD)") },
-                    placeholder = { Text("可选，不填则为0") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    enabled = !isProcessing
-                )
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedTextField(
+                        value = surchargeAmount,
+                        onValueChange = { surchargeAmount = it },
+                        label = { Text("附加费 (USD)") },
+                        placeholder = { Text("可选") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        enabled = !isProcessing
+                    )
+                    OutlinedTextField(
+                        value = cashbackAmount,
+                        onValueChange = { cashbackAmount = it },
+                        label = { Text("现金返还 (USD)") },
+                        placeholder = { Text("可选") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        enabled = !isProcessing
+                    )
+                }
 
                 // 订单描述输入
                 OutlinedTextField(
@@ -399,7 +413,7 @@ fun SaleTransactionPage(
                 logMessages = logMessages,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
+                    .height(350.dp)
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             )
         }
