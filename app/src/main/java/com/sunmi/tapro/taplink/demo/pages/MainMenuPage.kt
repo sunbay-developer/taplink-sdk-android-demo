@@ -81,7 +81,7 @@ fun MainMenuPage(
                 enabled = !isConnecting && !isConnected,
                 modifier = Modifier.weight(1f)
             ) {
-                Text(if (isConnecting) "连接中..." else "连接")
+                Text(if (isConnecting) "连接中..." else "连接Tapro服务")
             }
 
             Button(
