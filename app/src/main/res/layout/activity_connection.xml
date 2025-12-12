@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Title Bar -->
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:gravity="center_vertical"-->
+<!--            android:padding="20dp"-->
+<!--            android:background="@color/colorPrimary"-->
+<!--            android:elevation="4dp">-->
+
+<!--            <TextView-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:text="@string/connection_settings_title"-->
+<!--                android:textColor="#FFFFFF"-->
+<!--                android:textSize="20sp"-->
+<!--                android:textStyle="bold" />-->
+
+<!--        </LinearLayout>-->
+
+        <!-- Connection Mode Selection -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="3dp">
+
+                <RadioGroup
+                    android:id="@+id/rg_connection_mode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@android:color/white">
+
+                    <RadioButton
+                        android:id="@+id/rb_app_to_app"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/connection_mode_app_to_app"
+                        android:textSize="16sp"
+                        android:textColor="#333333"
+                        android:padding="16dp"
+                        android:checked="true" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#F0F0F0" />
+
+                    <RadioButton
+                        android:id="@+id/rb_cable"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/connection_mode_cable"
+                        android:textSize="16sp"
+                        android:textColor="#999999"
+                        android:padding="16dp"
+                        android:enabled="false" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#F0F0F0" />
+
+                    <RadioButton
+                        android:id="@+id/rb_lan"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/connection_mode_lan"
+                        android:textSize="16sp"
+                        android:textColor="#999999"
+                        android:padding="16dp"
+                        android:enabled="false" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#F0F0F0" />
+
+                    <RadioButton
+                        android:id="@+id/rb_cloud"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/connection_mode_cloud"
+                        android:textSize="16sp"
+                        android:textColor="#999999"
+                        android:padding="16dp"
+                        android:enabled="false" />
+
+                </RadioGroup>
+
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
+        <!-- App-to-App Configuration Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:paddingBottom="24dp">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/layout_app_to_app_config"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/purple_light"
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/app_to_app_config_title"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="#2C2C2C"
+                        android:layout_marginBottom="12dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/app_to_app_config_description"
+                        android:textSize="14sp"
+                        android:textColor="#666666"
+                        android:lineSpacingExtra="2dp" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
+        <!-- Cable Configuration Section -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/layout_cable_config"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="#F8F9FA"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:alpha="0.6">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cable_config_title"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#333333"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Connection Type Selection -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cable_connection_type_label"
+                    android:textSize="14sp"
+                    android:textColor="#666666"
+                    android:layout_marginBottom="8dp" />
+
+                <RadioGroup
+                    android:id="@+id/rg_cable_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp">
+
+                    <RadioButton
+                        android:id="@+id/rb_usb"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/cable_type_usb"
+                        android:textSize="14sp"
+                        android:checked="true"
+                        android:enabled="false" />
+
+                    <RadioButton
+                        android:id="@+id/rb_serial"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/cable_type_serial"
+                        android:textSize="14sp"
+                        android:enabled="false" />
+
+                </RadioGroup>
+
+                <!-- Baud Rate Settings -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cable_baud_rate_label"
+                    android:textSize="14sp"
+                    android:textColor="#666666"
+                    android:layout_marginBottom="8dp" />
+
+                <Spinner
+                    android:id="@+id/spinner_baud_rate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:enabled="false" />
+
+                <!-- Under Development Note -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="1dp"
+                    app:cardBackgroundColor="#FFF3E0">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/mode_under_development"
+                        android:textSize="14sp"
+                        android:textColor="#FF9800"
+                        android:textStyle="bold"
+                        android:padding="12dp"
+                        android:gravity="center" />
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- LAN Configuration Section -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/layout_lan_config"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="#F8F9FA"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:alpha="0.6">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lan_config_title"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#333333"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- IP Address Input -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lan_ip_address_label"
+                    android:textSize="14sp"
+                    android:textColor="#666666"
+                    android:layout_marginBottom="8dp" />
+
+                <EditText
+                    android:id="@+id/et_lan_ip"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:hint="@string/lan_ip_address_hint"
+                    android:inputType="textNoSuggestions"
+                    android:textSize="16sp"
+                    android:padding="12dp"
+                    android:background="@android:color/white"
+                    android:layout_marginBottom="16dp"
+                    android:enabled="false" />
+
+                <!-- Port Number Settings -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lan_port_label"
+                    android:textSize="14sp"
+                    android:textColor="#666666"
+                    android:layout_marginBottom="8dp" />
+
+                <EditText
+                    android:id="@+id/et_lan_port"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:hint="@string/lan_port_hint"
+                    android:inputType="number"
+                    android:textSize="16sp"
+                    android:padding="12dp"
+                    android:background="@android:color/white"
+                    android:layout_marginBottom="16dp"
+                    android:enabled="false" />
+
+                <!-- TLS Switch -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/lan_tls_label"
+                        android:textSize="14sp"
+                        android:textColor="#666666" />
+
+                    <Switch
+                        android:id="@+id/switch_tls"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:enabled="false" />
+
+                </LinearLayout>
+
+                <!-- 开发中提示 -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="1dp"
+                    app:cardBackgroundColor="#FFF3E0">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/mode_under_development"
+                        android:textSize="14sp"
+                        android:textColor="#FF9800"
+                        android:textStyle="bold"
+                        android:padding="12dp"
+                        android:gravity="center" />
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Cloud Configuration Section -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/layout_cloud_config"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="#F8F9FA"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:alpha="0.6">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cloud_config_title"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#333333"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Device ID Input -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cloud_device_id_label"
+                    android:textSize="14sp"
+                    android:textColor="#666666"
+                    android:layout_marginBottom="8dp" />
+
+                <EditText
+                    android:id="@+id/et_cloud_device_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:hint="@string/cloud_device_id_hint"
+                    android:inputType="textNoSuggestions"
+                    android:textSize="16sp"
+                    android:padding="12dp"
+                    android:background="@android:color/white"
+                    android:layout_marginBottom="16dp"
+                    android:enabled="false" />
+
+                <!-- API Endpoint Settings -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cloud_api_endpoint_label"
+                    android:textSize="14sp"
+                    android:textColor="#666666"
+                    android:layout_marginBottom="8dp" />
+
+                <EditText
+                    android:id="@+id/et_cloud_api_endpoint"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:hint="@string/cloud_api_endpoint_hint"
+                    android:inputType="textUri"
+                    android:textSize="16sp"
+                    android:padding="12dp"
+                    android:background="@android:color/white"
+                    android:layout_marginBottom="16dp"
+                    android:enabled="false" />
+
+                <!-- 开发中提示 -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="1dp"
+                    app:cardBackgroundColor="#FFF3E0">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/mode_under_development"
+                        android:textSize="14sp"
+                        android:textColor="#FF9800"
+                        android:textStyle="bold"
+                        android:padding="12dp"
+                        android:gravity="center" />
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Configuration Validation Error -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_config_error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="#FFEBEE"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tv_config_error"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="14sp"
+                android:textColor="#F44336"
+                android:padding="16dp"
+                android:gravity="center" />
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Button Area -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <!-- Main Action Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="16dp">
+
+                <Button
+                    android:id="@+id/btn_cancel"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:text="@string/btn_cancel"
+                    android:textSize="16sp"
+                    android:textColor="#666666"
+                    android:background="#E0E0E0"
+                    android:layout_marginEnd="12dp"
+                    android:elevation="2dp" />
+
+                <Button
+                    android:id="@+id/btn_confirm"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:text="@string/btn_confirm"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"
+                    android:background="@color/colorPrimary"
+                    android:layout_marginStart="12dp"
+                    android:elevation="4dp" />
+
+            </LinearLayout>
+
+            <!-- Exit Application Button -->
+            <Button
+                android:id="@+id/btn_exit_app"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="@string/btn_exit_app"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:background="#F44336"
+                android:elevation="2dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

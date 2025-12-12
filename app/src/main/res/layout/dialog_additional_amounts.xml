@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Enter additional amounts (leave blank if not applicable):"
+        android:textSize="14sp"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Surcharge Amount:"
+        android:textSize="14sp"
+        android:layout_marginBottom="4dp" />
+
+    <EditText
+        android:id="@+id/et_surcharge_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter surcharge amount"
+        android:inputType="numberDecimal"
+        android:layout_marginBottom="12dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tip Amount:"
+        android:textSize="14sp"
+        android:layout_marginBottom="4dp" />
+
+    <EditText
+        android:id="@+id/et_tip_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter tip amount"
+        android:inputType="numberDecimal"
+        android:layout_marginBottom="12dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tax Amount:"
+        android:textSize="14sp"
+        android:layout_marginBottom="4dp" />
+
+    <EditText
+        android:id="@+id/et_tax_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter tax amount"
+        android:inputType="numberDecimal"
+        android:layout_marginBottom="12dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cashback Amount:"
+        android:textSize="14sp"
+        android:layout_marginBottom="4dp" />
+
+    <EditText
+        android:id="@+id/et_cashback_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter cashback amount"
+        android:inputType="numberDecimal"
+        android:layout_marginBottom="12dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Service Fee:"
+        android:textSize="14sp"
+        android:layout_marginBottom="4dp" />
+
+    <EditText
+        android:id="@+id/et_service_fee"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter service fee"
+        android:inputType="numberDecimal" />
+
+</LinearLayout>
