@@ -1,6 +1,6 @@
 # TaplinkDemo
 
-Sunmi Taplink SDK 支付集成演示应用，展示如何集成和使用 Sunmi Taplink SDK 进行支付交易处理。
+SUNBAY Taplink SDK 支付集成演示应用，展示如何集成和使用 SUNBAY Taplink SDK 进行支付交易处理。
 
 > 🚀 **快速体验**: 下载 [APK文件](app/debug/TaplinkDemo-debug-1.0.0.apk) 直接安装，或观看演示视频了解功能
 
@@ -17,14 +17,14 @@ TaplinkDemo 是由商米提供的支付 SDK 集成示例应用，演示如何使
   - 包含完整的支付功能演示
   - 支持 App-to-App 模式连接
 
-- **功能演示录屏**: 
+- **功能演示**: 
 
-[![演示视频](https://img.shields.io/badge/🎬_点击观看-演示视频-blue?style=for-the-badge)](./taplinkdemo.mp4)
+![功能演示GIF](./taplinkdemo.gif)
 
-> 📹 **视频说明**: 
-> - 点击上方按钮下载并观看演示视频
-> - 视频文件: [taplinkdemo.mp4](./taplinkdemo.mp4) (直接下载链接)
-> - 视频展示了完整的支付流程和功能操作
+> 📹 **演示说明**: 
+> - 上方GIF展示了完整的应用操作流程
+> - 如需查看高清版本，可下载 [完整视频文件](./taplinkdemo.mp4)
+> - GIF自动循环播放，展示主要功能操作
 
   - 展示完整的支付流程操作
   - App-to-App 模式连接演示
