@@ -35,7 +35,6 @@ TaplinkDemo 是由商米提供的支付 SDK 集成示例应用，演示如何使
 ### 支付交易功能
 - **销售交易 (SALE)** - 标准支付交易
 - **预授权交易 (AUTH)** - 预授权交易
-- **强制授权交易 (FORCED_AUTH)** - 带授权码的强制授权
 - **查询交易 (QUERY)** - 根据请求ID查询交易状态
 - **批次结算 (BATCH_CLOSE)** - 日终批次结算
 - **退款交易 (REFUND)** - 退款操作
@@ -265,7 +264,7 @@ class TaplinkDemoApplication : Application() {
 
 1. **启动应用** - 应用将自动以 App-to-App 模式连接到 Tapro
 2. **选择金额** - 使用预设金额按钮或输入自定义金额
-3. **选择交易类型** - 点击 Sale、Auth 或 Forced Auth 按钮
+3. **选择交易类型** - 点击 Sale 或 Auth 按钮
 4. **完成支付** - 应用将启动 Tapro 应用进行支付处理
 5. **查看结果** - 返回演示应用查看交易结果
 
@@ -288,8 +287,7 @@ class TaplinkDemoApplication : Application() {
 
 #### 附加金额支持
 - **销售交易**支持附加金额：附加费、小费、税费、返现、服务费
-- **预授权完成**支持附加金额配置
-- **强制授权**支持小费和税费
+- **预授权完成**支持小费和税费
 
 #### 后续交易操作
 - **退款**：对成功的销售交易进行退款
@@ -325,7 +323,6 @@ class TaplinkDemoApplication : Application() {
 enum class TransactionType {
     SALE,
     AUTH,
-    FORCED_AUTH,
     YOUR_NEW_TYPE  // 在此添加
 }
 ```
@@ -458,7 +455,7 @@ A:
 ### v1.0.0 (当前版本)
 - 初始版本发布
 - App-to-App 连接模式实现
-- 支持 Sale、Auth 和 Forced Auth 交易
+- 支持 Sale 和 Auth 交易
 - 支持完整的后续交易操作（REFUND、VOID、POST_AUTH、INCREMENTAL_AUTH、TIP_ADJUST）
 - 交易历史管理
 - 查询交易状态

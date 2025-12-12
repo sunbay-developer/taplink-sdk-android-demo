@@ -104,28 +104,7 @@ interface PaymentService {
         callback: PaymentCallback
     )
     
-    /**
-     * Execute FORCED_AUTH transaction (Forced authorization)
-     * 
-     * @param referenceOrderId Reference order ID
-     * @param transactionRequestId Transaction request ID
-     * @param amount Transaction amount
-     * @param currency Currency type
-     * @param authCode Authorization code
-     * @param description Transaction description
-     * @param callback Payment callback
-     */
-    fun executeForcedAuth(
-        referenceOrderId: String,
-        transactionRequestId: String,
-        amount: Double,
-        currency: String,
-        authCode: String,
-        description: String,
-        tipAmount: Double? = null,
-        taxAmount: Double? = null,
-        callback: PaymentCallback
-    )
+
     
     /**
      * Execute REFUND transaction (Refund)
@@ -192,6 +171,7 @@ interface PaymentService {
         description: String,
         surchargeAmount: Double? = null,
         tipAmount: Double? = null,
+        taxAmount: Double? = null,
         cashbackAmount: Double? = null,
         serviceFee: Double? = null,
         callback: PaymentCallback

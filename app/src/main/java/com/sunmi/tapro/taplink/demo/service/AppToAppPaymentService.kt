@@ -490,79 +490,7 @@ class AppToAppPaymentService : PaymentService {
         })
     }
     
-    /**
-     * Execute FORCED_AUTH transaction (forced authorization)
-     */
-    override fun executeForcedAuth(
-        referenceOrderId: String,
-        transactionRequestId: String,
-        amount: Double,
-        currency: String,
-        authCode: String,
-        description: String,
-        tipAmount: Double?,
-        taxAmount: Double?,
-        callback: PaymentCallback
-    ) {
-        if (!connected) {
-            callback.onFailure("C30", "Tapro payment terminal not connected")
-            return
-        }
-        
-        Log.d(TAG, "Executing FORCED_AUTH transaction - OrderId: $referenceOrderId, AuthCode: $authCode")
-        
-        // Create AmountInfo with all amounts
-        val amountInfo = AmountInfo(
-            orderAmount = BigDecimal.valueOf(amount),
-            pricingCurrency = currency,
-            tipAmount = tipAmount?.let { BigDecimal.valueOf(it) },
-            taxAmount = taxAmount?.let { BigDecimal.valueOf(it) }
-        )
-        
-        val request = PaymentRequest("FORCED_AUTH")
-            .setReferenceOrderId(referenceOrderId)
-            .setTransactionRequestId(transactionRequestId)
-            .setAmount(amountInfo)
-            .setForcedAuthCode(authCode)
-            .setDescription(description)
-        
-        Log.d(TAG, "=== FORCED_AUTH Request ===")
-        Log.d(TAG, "Request: $request")
-        
-        TaplinkSDK.execute(request, object : SdkPaymentCallback {
-            override fun onSuccess(result: SdkPaymentResult) {
-                handlePaymentResult(result, callback)
-            }
-            
-            override fun onFailure(error: SdkPaymentError) {
-                handlePaymentFailure("FORCED_AUTH", error, callback)
-            }
-            
-            override fun onProgress(event: SdkPaymentEvent) {
-                // Convert SDK returned status code to user-friendly message
-                val eventStr = event.eventMsg
-                Log.d(TAG, "FORCED_AUTH transaction progress - Event: $eventStr")
-                
-                // Provide specific progress feedback based on event type
-                val progressMessage = when {
-                    eventStr.contains("PROCESSING", ignoreCase = true) -> "Processing transaction"
-                    eventStr.contains("WAITING_CARD", ignoreCase = true) -> "Please insert, swipe or tap card"
-                    eventStr.contains("CARD_DETECTED", ignoreCase = true) -> "Card detected"
-                    eventStr.contains("READING_CARD", ignoreCase = true) -> "Card information is being read"
-                    eventStr.contains("WAITING_PIN", ignoreCase = true) -> "Please enter PIN on payment terminal"
-                    eventStr.contains("WAITING_SIGNATURE", ignoreCase = true) -> "Please enter signature on payment terminal"
-                    eventStr.contains("WAITING_RESPONSE", ignoreCase = true) -> "Waiting for payment gateway response"
-                    eventStr.contains("PRINTING", ignoreCase = true) -> "Transaction is being printed"
-                    eventStr.contains("COMPLETED", ignoreCase = true) -> "Transaction completed successfully"
-                    eventStr.contains("CANCEL", ignoreCase = true) -> "Transaction cancelled"
-                    
-                    else -> "FORCED_AUTH transaction processing..."
-                }
-                
-                callback.onProgress("PROCESSING", progressMessage)
-            }
-        })
-    }
+
     
     /**
      * Execute REFUND transaction (refund)
@@ -707,6 +635,7 @@ class AppToAppPaymentService : PaymentService {
         description: String,
         surchargeAmount: Double?,
         tipAmount: Double?,
+        taxAmount: Double?,
         cashbackAmount: Double?,
         serviceFee: Double?,
         callback: PaymentCallback
@@ -724,6 +653,7 @@ class AppToAppPaymentService : PaymentService {
         // Set additional amounts if provided
         surchargeAmount?.let { amountInfo = amountInfo.setSurchargeAmount(BigDecimal.valueOf(it)) }
         tipAmount?.let { amountInfo = amountInfo.setTipAmount(BigDecimal.valueOf(it)) }
+        taxAmount?.let { amountInfo = amountInfo.setTaxAmount(BigDecimal.valueOf(it)) }
         cashbackAmount?.let { amountInfo = amountInfo.setCashbackAmount(BigDecimal.valueOf(it)) }
         serviceFee?.let { amountInfo = amountInfo.setServiceFee(BigDecimal.valueOf(it)) }
         

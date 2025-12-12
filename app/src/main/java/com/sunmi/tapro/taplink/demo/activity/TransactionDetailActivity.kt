@@ -600,24 +600,28 @@ class TransactionDetailActivity : AppCompatActivity() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_additional_amounts, null)
         val etSurchargeAmount = dialogView.findViewById<EditText>(R.id.et_surcharge_amount)
         val etTipAmount = dialogView.findViewById<EditText>(R.id.et_tip_amount)
+        val etTaxAmount = dialogView.findViewById<EditText>(R.id.et_tax_amount)
         val etCashbackAmount = dialogView.findViewById<EditText>(R.id.et_cashback_amount)
         val etServiceFee = dialogView.findViewById<EditText>(R.id.et_service_fee)
         
+        // Hide surcharge, cashback and service fee fields as they're not supported for POST_AUTH
+        etSurchargeAmount.visibility = View.GONE
+        etCashbackAmount.visibility = View.GONE
+        etServiceFee.visibility = View.GONE
+        
         AlertDialog.Builder(this)
             .setTitle("Additional Amounts (Optional)")
-            .setMessage("Completion Amount: ${String.format("%.2f", completionAmount)}")
+            .setMessage("Completion Amount: ${String.format("%.2f", completionAmount)}\n\nPost-authorization completion supports tip and tax amounts only.")
             .setView(dialogView)
             .setPositiveButton("Proceed") { _, _ ->
-                val surchargeAmount = etSurchargeAmount.text.toString().toDoubleOrNull()
                 val tipAmount = etTipAmount.text.toString().toDoubleOrNull()
-                val cashbackAmount = etCashbackAmount.text.toString().toDoubleOrNull()
-                val serviceFee = etServiceFee.text.toString().toDoubleOrNull()
+                val taxAmount = etTaxAmount.text.toString().toDoubleOrNull()
                 
-                executePostAuth(completionAmount, surchargeAmount, tipAmount, cashbackAmount, serviceFee)
+                executePostAuth(completionAmount, null, tipAmount, taxAmount, null, null)
             }
             .setNegativeButton("Cancel", null)
             .setNeutralButton("Skip") { _, _ ->
-                executePostAuth(completionAmount, null, null, null, null)
+                executePostAuth(completionAmount, null, null, null, null, null)
             }
             .show()
     }
@@ -1025,6 +1029,7 @@ class TransactionDetailActivity : AppCompatActivity() {
         amount: Double,
         surchargeAmount: Double? = null,
         tipAmount: Double? = null,
+        taxAmount: Double? = null,
         cashbackAmount: Double? = null,
         serviceFee: Double? = null,
         existingTransactionRequestId: String? = null
@@ -1074,6 +1079,7 @@ class TransactionDetailActivity : AppCompatActivity() {
             description = "Pre-authorization completion",
             surchargeAmount = surchargeAmount,
             tipAmount = tipAmount,
+            taxAmount = taxAmount,
             cashbackAmount = cashbackAmount,
             serviceFee = serviceFee,
             callback = object : PaymentCallback {
@@ -1123,8 +1129,8 @@ class TransactionDetailActivity : AppCompatActivity() {
                             context = this@TransactionDetailActivity,
                             errorCode = errorCode,
                             errorMessage = errorMessage,
-                            onRetryWithSameId = { executePostAuth(amount, surchargeAmount, tipAmount, cashbackAmount, serviceFee, transactionRequestId) },
-                            onRetryWithNewId = { executePostAuth(amount, surchargeAmount, tipAmount, cashbackAmount, serviceFee) }
+                            onRetryWithSameId = { executePostAuth(amount, surchargeAmount, tipAmount, taxAmount, cashbackAmount, serviceFee, transactionRequestId) },
+                            onRetryWithNewId = { executePostAuth(amount, surchargeAmount, tipAmount, taxAmount, cashbackAmount, serviceFee) }
                         )
                     }
                 }

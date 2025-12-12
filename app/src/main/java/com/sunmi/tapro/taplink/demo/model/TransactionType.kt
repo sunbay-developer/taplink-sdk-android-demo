@@ -16,10 +16,7 @@ enum class TransactionType {
      */
     AUTH,
     
-    /**
-     * Forced authorization - Offline authorization
-     */
-    FORCED_AUTH,
+
     
     /**
      * Incremental authorization - Increase amount based on original pre-authorization

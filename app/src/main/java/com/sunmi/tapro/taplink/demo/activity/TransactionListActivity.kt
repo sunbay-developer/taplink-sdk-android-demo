@@ -277,7 +277,6 @@ class TransactionListActivity : AppCompatActivity() {
             val transactionType = when (result.transactionType) {
                 "SALE" -> TransactionType.SALE
                 "AUTH" -> TransactionType.AUTH
-                "FORCED_AUTH" -> TransactionType.FORCED_AUTH
                 "INCREMENT_AUTH" -> TransactionType.INCREMENT_AUTH
                 "POST_AUTH" -> TransactionType.POST_AUTH
                 "REFUND" -> TransactionType.REFUND

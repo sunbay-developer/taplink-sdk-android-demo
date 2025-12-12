@@ -56,7 +56,6 @@ class MainActivity : Activity() {
     private lateinit var tvSelectedAmount: TextView
     private lateinit var btnSale: Button
     private lateinit var btnAuth: Button
-    private lateinit var btnForcedAuth: Button
     private lateinit var tvPaymentStatus: TextView
 
     // Payment service instance
@@ -144,7 +143,6 @@ class MainActivity : Activity() {
             // Transaction buttons
             btnSale = findViewById(R.id.btn_sale)
             btnAuth = findViewById(R.id.btn_auth)
-            btnForcedAuth = findViewById(R.id.btn_forced_auth)
 
             // Payment status display
             tvPaymentStatus = findViewById(R.id.tv_payment_status)
@@ -225,9 +223,7 @@ class MainActivity : Activity() {
             startPayment(TransactionType.AUTH)
         }
 
-        btnForcedAuth.setOnClickListener {
-            startPayment(TransactionType.FORCED_AUTH)
-        }
+
     }
 
     /**
@@ -359,7 +355,6 @@ class MainActivity : Activity() {
                 Log.d(TAG, "PaymentService not initialized yet, skip button state update")
                 btnSale.isEnabled = false
                 btnAuth.isEnabled = false
-                btnForcedAuth.isEnabled = false
                 return
             }
 
@@ -369,7 +364,6 @@ class MainActivity : Activity() {
 
             btnSale.isEnabled = enabled
             btnAuth.isEnabled = enabled
-            btnForcedAuth.isEnabled = enabled
 
             Log.d(
                 TAG,
@@ -379,7 +373,6 @@ class MainActivity : Activity() {
             Log.e(TAG, "Error updating transaction buttons state", e)
             btnSale.isEnabled = false
             btnAuth.isEnabled = false
-            btnForcedAuth.isEnabled = false
         }
     }
 
@@ -604,11 +597,7 @@ class MainActivity : Activity() {
                 )
             }
 
-            TransactionType.FORCED_AUTH -> {
-                // FORCED_AUTH requires an authorization code; here we use a sample code.
-                // In a real-world app, the user should be prompted to enter the authorization code.
-                showForcedAuthDialog(referenceOrderId, transactionRequestId, callback)
-            }
+
 
             else -> {
                 showToast("Unsupported transaction type: $transactionType")
@@ -659,103 +648,7 @@ class MainActivity : Activity() {
             .show()
     }
 
-    /**
-     * Show forced authorization dialog for user to enter authorization code and additional amounts
-     */
-    private fun showForcedAuthDialog(
-        referenceOrderId: String,
-        transactionRequestId: String,
-        callback: PaymentCallback
-    ) {
-        // Create dialog layout for additional amounts
-        val dialogView = layoutInflater.inflate(R.layout.dialog_additional_amounts, null)
-        val etTipAmount = dialogView.findViewById<EditText>(R.id.et_tip_amount)
-        val etTaxAmount = dialogView.findViewById<EditText>(R.id.et_tax_amount)
-        val etSurchargeAmount = dialogView.findViewById<EditText>(R.id.et_surcharge_amount)
-        val etCashbackAmount = dialogView.findViewById<EditText>(R.id.et_cashback_amount)
 
-        // Hide cashback and surcharge fields as they're not needed for FORCED_AUTH
-        etCashbackAmount.visibility = View.GONE
-        etSurchargeAmount.visibility = View.GONE
-
-        AlertDialog.Builder(this)
-            .setTitle("Forced Authorization - Additional Amounts")
-            .setMessage("Base Amount: ${amountFormatter.format(selectedAmount)}")
-            .setView(dialogView)
-            .setPositiveButton("Proceed") { _, _ ->
-                val tipAmount = etTipAmount.text.toString().toDoubleOrNull()
-                val taxAmount = etTaxAmount.text.toString().toDoubleOrNull()
-
-                // Now show dialog for authorization code
-                showAuthCodeDialog(
-                    referenceOrderId,
-                    transactionRequestId,
-                    tipAmount,
-                    taxAmount,
-                    callback
-                )
-            }
-            .setNegativeButton("Cancel") { _, _ ->
-                hidePaymentProgressDialog()
-            }
-            .setNeutralButton("Skip") { _, _ ->
-                // Show dialog for authorization code without additional amounts
-                showAuthCodeDialog(referenceOrderId, transactionRequestId, null, null, callback)
-            }
-            .setCancelable(false)
-            .show()
-    }
-
-    /**
-     * Show dialog for entering authorization code
-     */
-    private fun showAuthCodeDialog(
-        referenceOrderId: String,
-        transactionRequestId: String,
-        tipAmount: Double?,
-        taxAmount: Double?,
-        callback: PaymentCallback
-    ) {
-        val input = EditText(this).apply {
-            hint = "Enter authorization code"
-            inputType = android.text.InputType.TYPE_CLASS_TEXT
-        }
-
-        AlertDialog.Builder(this)
-            .setTitle("Forced Authorization")
-            .setMessage("Please enter authorization code to complete forced auth transaction")
-            .setView(input)
-            .setPositiveButton("OK") { dialog, _ ->
-                val authCode = input.text.toString().trim()
-                if (authCode.isNotEmpty()) {
-                    // Execute forced authorization
-                    paymentService.executeForcedAuth(
-                        referenceOrderId = referenceOrderId,
-                        transactionRequestId = transactionRequestId,
-                        amount = selectedAmount,
-                        currency = "USD",
-                        authCode = authCode,
-                        description = "Demo FORCED_AUTH Payment - ${
-                            amountFormatter.format(
-                                selectedAmount
-                            )
-                        }",
-                        tipAmount = tipAmount,
-                        taxAmount = taxAmount,
-                        callback = callback
-                    )
-                    dialog.dismiss()
-                } else {
-                    showToast("Please enter valid authorization code")
-                }
-            }
-            .setNegativeButton("Cancel") { dialog, _ ->
-                dialog.dismiss()
-                hidePaymentProgressDialog()
-            }
-            .setCancelable(false)
-            .show()
-    }
 
     /**
      * Show payment progress dialog
@@ -1324,10 +1217,7 @@ class MainActivity : Activity() {
                 )
             }
 
-            TransactionType.FORCED_AUTH -> {
-                // For retry, use a default auth code or prompt user again
-                showForcedAuthDialog(referenceOrderId, transactionRequestId, callback)
-            }
+
 
             else -> {
                 showToast("Unsupported transaction type for retry: $transactionType")

@@ -30,7 +30,6 @@
     <string name="select_transaction_type_title">Select Transaction Type</string>
     <string name="transaction_type_sale">Sale (SALE)</string>
     <string name="transaction_type_auth">Pre-authorization (AUTH)</string>
-    <string name="transaction_type_forced_auth">Forced Authorization (FORCED_AUTH)</string>
     
     <!-- Payment Status -->
     <string name="payment_status_starting_tapro">Starting Tapro Payment App...</string>

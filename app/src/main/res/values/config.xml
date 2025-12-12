@@ -41,7 +41,6 @@
     <!-- Supported transaction types (for UI display control) -->
     <bool name="support_sale">true</bool>
     <bool name="support_auth">true</bool>
-    <bool name="support_forced_auth">true</bool>
     <bool name="support_refund">true</bool>
     <bool name="support_void">true</bool>
     <bool name="support_tip_adjust">true</bool>

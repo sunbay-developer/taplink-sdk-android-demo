@@ -59,24 +59,22 @@ data class Transaction(
     
     /**
      * Check if transaction can be refunded
-     * Only successful transactions of type SALE, FORCED_AUTH and POST_AUTH can be refunded
+     * Only successful transactions of type SALE and POST_AUTH can be refunded
      */
     fun canRefund(): Boolean {
         return isSuccess() && (
             type == TransactionType.SALE ||
-            type == TransactionType.FORCED_AUTH ||
             type == TransactionType.POST_AUTH
         )
     }
     
     /**
      * Check if transaction can be voided
-     * Only successful transactions of type SALE, FORCED_AUTH, AUTH and POST_AUTH can be voided
+     * Only successful transactions of type SALE, AUTH and POST_AUTH can be voided
      */
     fun canVoid(): Boolean {
         return isSuccess() && (
             type == TransactionType.SALE ||
-            type == TransactionType.FORCED_AUTH ||
             type == TransactionType.AUTH ||
             type == TransactionType.POST_AUTH
         )
@@ -84,12 +82,11 @@ data class Transaction(
     
     /**
      * Check if transaction can be tip adjusted
-     * Only successful transactions of type SALE, FORCED_AUTH and POST_AUTH can be tip adjusted
+     * Only successful transactions of type SALE and POST_AUTH can be tip adjusted
      */
     fun canAdjustTip(): Boolean {
         return isSuccess() && (
             type == TransactionType.SALE ||
-            type == TransactionType.FORCED_AUTH ||
             type == TransactionType.POST_AUTH
         )
     }
@@ -117,7 +114,6 @@ data class Transaction(
         return when (type) {
             TransactionType.SALE -> "SALE"
             TransactionType.AUTH -> "AUTH"
-            TransactionType.FORCED_AUTH -> "FORCED AUTH"
             TransactionType.INCREMENT_AUTH -> "INCREMENT AUTH"
             TransactionType.POST_AUTH -> "POST AUTH"
             TransactionType.REFUND -> "REFUND"
