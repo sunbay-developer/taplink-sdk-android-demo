@@ -136,13 +136,13 @@ object ErrorHandler {
     ) {
         Log.e(TAG, "Connection error - Code: $errorCode, Message: $errorMessage")
         
-        // Show simple connection error dialog
+        // Show simple connection error dialog 
         val builder = AlertDialog.Builder(context)
             .setTitle("Connection Error")
             .setMessage("$errorMessage\n\nError Code: $errorCode")
             .setCancelable(false)
-
-        if (onRetry != null) {
+            
+            if (onRetry != null) {
             builder.setPositiveButton("Retry") { _, _ ->
                 onRetry.invoke()
             }
