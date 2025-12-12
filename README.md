@@ -2,7 +2,12 @@
 
 Sunmi Taplink SDK 支付集成演示应用，展示如何集成和使用 Sunmi Taplink SDK 进行支付交易处理。
 
-> 🚀 **快速体验**: 下载 [APK文件](app/debug/TaplinkDemo-debug-1.0.0.apk) 直接安装，或观看 [演示视频](taplinkdemo.mp4) 了解功能
+> 🚀 **快速体验**: 下载 [APK文件](app/debug/TaplinkDemo-debug-1.0.0.apk) 直接安装，或观看演示视频了解功能
+
+<video width="600" controls>
+  <source src="taplinkdemo.mp4" type="video/mp4">
+  您的浏览器不支持视频播放，请<a href="taplinkdemo.mp4">点击此处下载视频</a>
+</video>
 
 ## 项目介绍
 
@@ -19,7 +24,9 @@ TaplinkDemo 是由商米提供的支付 SDK 集成示例应用，演示如何使
 
 - **[taplinkdemo.mp4](taplinkdemo.mp4)** - 功能演示录屏
   - 完整展示支付流程操作
+  - 演示各种交易类型的使用方法
   - 展示交易历史和状态查询功能
+  - 演示错误处理和重试机制
 
 ## 功能特性
 
@@ -129,9 +136,12 @@ app/src/main/res/
   - 直接安装即可体验完整功能
 
 ### 🎥 演示视频
-- **功能演示录屏**: [taplinkdemo.mp4](taplinkdemo.mp4)
+- **功能演示录屏**: 
+  <video width="600" controls>
+    <source src="taplinkdemo.mp4" type="video/mp4">
+    您的浏览器不支持视频播放，请<a href="taplinkdemo.mp4">点击此处下载视频</a>
+  </video>
   - 展示完整的支付流程操作
-  - 包含各种交易类型的演示
   - App-to-App 模式连接演示
   - 交易历史和详情查看
 
@@ -212,8 +222,7 @@ sdk.dir=/path/to/your/Android/sdk
 如果您想快速体验应用功能，可以：
 
 1. **直接安装APK**: 下载 [TaplinkDemo-debug-1.0.0.apk](app/debug/TaplinkDemo-debug-1.0.0.apk) 并安装到您的Android设备
-2. **观看演示视频**: 查看 [taplinkdemo.mp4](taplinkdemo.mp4) 了解完整的操作流程
-3. **配置SDK凭据**: 按照下面的步骤配置您自己的SDK凭据
+2. **配置SDK凭据**: 按照下面的步骤配置您自己的SDK凭据
 
 ### 1. 配置 SDK 凭据
 
