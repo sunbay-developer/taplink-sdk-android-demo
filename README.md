@@ -17,6 +17,12 @@ TaplinkDemo 是由商米提供的支付 SDK 集成示例应用，演示如何使
   - 包含完整的支付功能演示
   - 支持 App-to-App 模式连接
 
+- **[Tapro [standalone] - preview_check_v1.0.0.60(develop).apk](Tapro%20%5Bstandalone%5D%20-%20preview_check_v1.0.0.60%28develop%29.apk)** - Tapro 支付终端应用
+  - 版本: v1.0.0.60 (develop)
+  - **必须安装**: App-to-App 模式需要此应用处理支付
+  - 需要将设备 SN 绑定到 SUNBAY 平台才能正常使用
+  - 与 TaplinkDemo 配合使用完成支付交易
+
 - **功能演示**: 
 
 ![功能演示GIF](./taplinkdemo.gif)
@@ -130,11 +136,20 @@ app/src/main/res/
 ## 演示资源
 
 ### 📱 APK 下载
+
+#### TaplinkDemo 演示应用
 - **演示应用APK**: [TaplinkDemo-debug-1.0.0.apk](app/debug/TaplinkDemo-debug-1.0.0.apk)
   - 版本: 1.0.0 Debug
   - 最小SDK: 25 (Android 7.1)
   - 目标SDK: 35 (Android 15)
   - 直接安装即可体验完整功能
+
+#### Tapro 支付终端应用
+- **Tapro应用APK**: [Tapro [standalone] - preview_check_v1.0.0.60(develop).apk](Tapro%20%5Bstandalone%5D%20-%20preview_check_v1.0.0.60%28develop%29.apk)
+  - 版本: v1.0.0.60 (develop)
+  - **重要**: 使用 App-to-App 模式必须安装此应用
+  - 安装后需要将设备 SN 绑定到 SUNBAY 平台
+  - 负责处理实际的支付交易操作
 
 ## 快速开始
 
@@ -212,8 +227,13 @@ sdk.dir=/path/to/your/Android/sdk
 
 如果您想快速体验应用功能，可以：
 
-1. **直接安装APK**: 下载 [TaplinkDemo-debug-1.0.0.apk](app/debug/TaplinkDemo-debug-1.0.0.apk) 并安装到您的Android设备
-2. **配置SDK凭据**: 按照下面的步骤配置您自己的SDK凭据
+1. **安装必要的APK文件**:
+   - 下载并安装 [TaplinkDemo-debug-1.0.0.apk](app/debug/TaplinkDemo-debug-1.0.0.apk) - 演示应用
+   - 下载并安装 [Tapro [standalone] - preview_check_v1.0.0.60(develop).apk](Tapro%20%5Bstandalone%5D%20-%20preview_check_v1.0.0.60%28develop%29.apk) - Tapro支付终端应用
+
+2. **设备绑定**: 将您的设备 SN 绑定到 SUNBAY 平台（联系技术支持获取绑定方法）
+
+3. **配置SDK凭据**: 按照下面的步骤配置您自己的SDK凭据
 
 ### 1. 配置 SDK 凭据
 
@@ -399,7 +419,8 @@ A:
 ### Q: 连接失败，错误代码 "C22"？
 A: 
 - 错误 C22 表示 Tapro 应用未安装
-- 在同一设备上安装 Tapro 应用
+- 下载并安装 [Tapro [standalone] - preview_check_v1.0.0.60(develop).apk](Tapro%20%5Bstandalone%5D%20-%20preview_check_v1.0.0.60%28develop%29.apk)
+- 确保设备 SN 已绑定到 SUNBAY 平台
 - 确保两个应用使用兼容的证书签名
 
 ### Q: 连接失败，错误代码 "S03"？

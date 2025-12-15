@@ -515,9 +515,13 @@ class AppToAppPaymentService : PaymentService {
         val request = PaymentRequest("REFUND")
             .setReferenceOrderId(referenceOrderId)
             .setTransactionRequestId(transactionRequestId)
-            .setOriginalTransactionId(originalTransactionId)
             .setAmount(AmountInfo(BigDecimal.valueOf(amount), currency))
             .setDescription(description)
+        
+        // Only set originalTransactionId if it's not empty (for reference-based refunds)
+        if (originalTransactionId.isNotEmpty()) {
+            request.setOriginalTransactionId(originalTransactionId)
+        }
         
         reason?.let { request.setReason(it) }
         

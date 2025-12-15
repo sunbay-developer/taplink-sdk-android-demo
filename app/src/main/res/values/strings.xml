@@ -97,7 +97,8 @@
     <!-- Retry Progress -->
     <string name="retry_progress_title">Retrying</string>
     <string name="retry_progress_message">Retrying transaction...\n\nAttempt: %1$d/%2$d\nLast error: %3$s</string>
-    
+    <string name="refund_without_reference">Refund without reference</string>
+
 </resources>
 
 

@@ -40,32 +40,51 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:padding="16dp"
         android:background="#FFFFFF"
         android:elevation="4dp">
 
-        <Button
-            android:id="@+id/btn_query_transaction"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:text="Query Transaction"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp"
-            android:background="@color/colorPrimary"
-            android:layout_marginEnd="8dp" />
+        <!-- First Row: Query and Batch Close -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
 
+            <Button
+                android:id="@+id/btn_query_transaction"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:text="Query Transaction"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:background="@color/colorPrimary"
+                android:layout_marginEnd="8dp" />
+
+            <Button
+                android:id="@+id/btn_batch_close"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:text="Batch Close"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:background="@color/colorAccent"
+                android:layout_marginStart="8dp" />
+
+        </LinearLayout>
+
+        <!-- Second Row: Standalone Refund -->
         <Button
-            android:id="@+id/btn_batch_close"
-            android:layout_width="0dp"
+            android:id="@+id/btn_standalone_refund"
+            android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:layout_weight="1"
-            android:text="Batch Close"
+            android:text="@string/refund_without_reference"
             android:textColor="#FFFFFF"
             android:textSize="16sp"
-            android:background="@color/colorAccent"
-            android:layout_marginStart="8dp" />
+            android:background="#FF6B35" />
 
     </LinearLayout>
 

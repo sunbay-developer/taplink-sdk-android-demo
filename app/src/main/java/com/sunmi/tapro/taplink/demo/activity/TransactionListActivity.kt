@@ -41,6 +41,7 @@ class TransactionListActivity : AppCompatActivity() {
 
     private lateinit var btnQueryTransaction: Button
     private lateinit var btnBatchClose: Button
+    private lateinit var btnStandaloneRefund: Button
     private lateinit var lvTransactions: ListView
     private lateinit var layoutEmpty: LinearLayout
     
@@ -73,6 +74,7 @@ class TransactionListActivity : AppCompatActivity() {
     private fun initViews() {
         btnQueryTransaction = findViewById(R.id.btn_query_transaction)
         btnBatchClose = findViewById(R.id.btn_batch_close)
+        btnStandaloneRefund = findViewById(R.id.btn_standalone_refund)
         lvTransactions = findViewById(R.id.lv_transactions)
         layoutEmpty = findViewById(R.id.layout_empty)
         
@@ -103,6 +105,11 @@ class TransactionListActivity : AppCompatActivity() {
         // Batch close button
         btnBatchClose.setOnClickListener {
             showBatchCloseDialog()
+        }
+
+        // Refund button
+        btnStandaloneRefund.setOnClickListener {
+            showRefundDialog()
         }
         
         // List item click event
@@ -334,6 +341,138 @@ class TransactionListActivity : AppCompatActivity() {
     }
 
     /**
+     * Show Refund confirmation dialog
+     */
+    private fun showRefundDialog() {
+        if (!paymentService.isConnected()) {
+            showToast("Not connected to payment terminal")
+            return
+        }
+
+        val input = android.widget.EditText(this)
+        input.hint = "Enter Refund Amount"
+        input.inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+
+        AlertDialog.Builder(this)
+            .setTitle("Refund Transaction")
+            .setMessage("Please enter the refund amount")
+            .setView(input)
+            .setPositiveButton("Refund") { _, _ ->
+                val amountStr = input.text.toString().trim()
+                if (amountStr.isNotEmpty()) {
+                    val amount = amountStr.toDouble()
+                    if (amount > 0) {
+                        executeRefund(amount)
+                    } else {
+                        showToast("Please enter a valid refund amount")
+                    }
+                } else {
+                    showToast("Please enter refund amount")
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    /**
+     * Execute refund transaction
+     */
+    private fun executeRefund(amount: Double) {
+        Log.d(TAG, "Executing refund transaction - Amount: $amount")
+
+        val progressDialog = ProgressDialog(this)
+        progressDialog.setMessage("Processing refund...")
+        progressDialog.setCancelable(false)
+        progressDialog.show()
+
+        val transactionRequestId = generateTransactionRequestId()
+        val referenceOrderId = generateOrderId()
+
+        // Create transaction record
+        val newTransaction = Transaction(
+            transactionRequestId = transactionRequestId,
+            transactionId = null,
+            referenceOrderId = referenceOrderId,
+            type = TransactionType.REFUND,
+            amount = amount,
+            currency = "USD",
+            status = TransactionStatus.PROCESSING,
+            timestamp = System.currentTimeMillis()
+        )
+        TransactionRepository.addTransaction(newTransaction)
+
+        paymentService.executeRefund(
+            referenceOrderId = referenceOrderId,
+            transactionRequestId = transactionRequestId,
+            originalTransactionId = "", // 无参考号退款，不设置原始交易ID
+            amount = amount,
+            currency = "USD",
+            description = "Refund without reference",
+            reason = "Refund requested by merchant",
+            callback = object : PaymentCallback {
+                override fun onSuccess(result: PaymentResult) {
+                    runOnUiThread {
+                        progressDialog.dismiss()
+
+                        // Update transaction status
+                        val status = when (result.transactionStatus) {
+                            "SUCCESS" -> TransactionStatus.SUCCESS
+                            "FAILED" -> TransactionStatus.FAILED
+                            "PROCESSING" -> TransactionStatus.PROCESSING
+                            else -> TransactionStatus.FAILED
+                        }
+
+                        TransactionRepository.updateTransactionWithAmounts(
+                            transactionRequestId = transactionRequestId,
+                            status = status,
+                            transactionId = result.transactionId,
+                            authCode = result.authCode,
+                            errorCode = if (status == TransactionStatus.FAILED) result.transactionResultCode else null,
+                            errorMessage = if (status == TransactionStatus.FAILED) result.transactionResultMsg else null,
+                            orderAmount = result.amount?.orderAmount,
+                            totalAmount = result.amount?.transAmount,
+                            surchargeAmount = result.amount?.surchargeAmount,
+                            tipAmount = result.amount?.tipAmount,
+                            cashbackAmount = result.amount?.cashbackAmount,
+                            serviceFee = result.amount?.serviceFee
+                        )
+
+                        if (status == TransactionStatus.SUCCESS) {
+                            showToast("Refund successful!")
+                        } else {
+                            showToast("Refund completed with status: ${result.transactionStatus}")
+                        }
+                        loadTransactions()
+                    }
+                }
+
+                override fun onFailure(errorCode: String, errorMessage: String) {
+                    runOnUiThread {
+                        progressDialog.dismiss()
+
+                        // Update transaction status to failed
+                        TransactionRepository.updateTransactionStatus(
+                            transactionRequestId = transactionRequestId,
+                            status = TransactionStatus.FAILED,
+                            errorCode = errorCode,
+                            errorMessage = errorMessage
+                        )
+
+                        showToast("Refund failed: $errorMessage")
+                        loadTransactions()
+                    }
+                }
+
+                override fun onProgress(status: String, message: String) {
+                    runOnUiThread {
+                        progressDialog.setMessage(message)
+                    }
+                }
+            }
+        )
+    }
+
+    /**
      * Execute batch close
      */
     private fun executeBatchClose() {
@@ -465,15 +604,6 @@ class TransactionListActivity : AppCompatActivity() {
             .setCancelable(false)
             .show()
     }
-
-    /**
-     * Clear all transactions after successful batch close
-     */
-    private fun clearAllTransactionsAfterBatchClose() {
-        TransactionRepository.clearAllTransactions()
-        loadTransactions()
-    }
-
 
 
     /**
