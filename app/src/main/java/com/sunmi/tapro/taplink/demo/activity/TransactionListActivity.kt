@@ -380,13 +380,14 @@ class TransactionListActivity : AppCompatActivity() {
     private fun executeRefund(amount: Double) {
         Log.d(TAG, "Executing refund transaction - Amount: $amount")
 
-        val progressDialog = ProgressDialog(this)
-        progressDialog.setMessage("Processing refund...")
-        progressDialog.setCancelable(false)
-        progressDialog.show()
-
+        // Generate transaction IDs first
         val transactionRequestId = generateTransactionRequestId()
         val referenceOrderId = generateOrderId()
+
+        val progressDialog = ProgressDialog(this)
+        progressDialog.setMessage("Processing refund...")
+        progressDialog.setCancelable(true)
+        progressDialog.show()
 
         // Create transaction record
         val newTransaction = Transaction(
