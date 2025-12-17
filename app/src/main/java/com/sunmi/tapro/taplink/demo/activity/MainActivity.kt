@@ -1191,6 +1191,8 @@ class MainActivity : Activity() {
         val etCashbackAmount = dialogView.findViewById<EditText>(R.id.et_cashback_amount)
         val tvServiceFee = dialogView.findViewById<TextView>(R.id.tv_service_fee)
         val etServiceFee = dialogView.findViewById<EditText>(R.id.et_service_fee)
+        val tvOrderAmount = dialogView.findViewById<TextView>(R.id.tv_base_amount_t)
+        val tvBaseAmount = dialogView.findViewById<TextView>(R.id.tv_base_amount)
 
         // Hide all fields except tip and tax
         tvSurchargeAmount.visibility = View.GONE
@@ -1199,6 +1201,8 @@ class MainActivity : Activity() {
         etCashbackAmount.visibility = View.GONE
         tvServiceFee.visibility = View.GONE
         etServiceFee.visibility = View.GONE
+        tvOrderAmount.visibility = View.GONE
+        tvBaseAmount.visibility = View.GONE
 
         // Pre-fill with original transaction amounts if available
         transaction.tipAmount?.let { etTipAmount.setText(it.toString()) }
