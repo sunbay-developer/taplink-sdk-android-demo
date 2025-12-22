@@ -3,6 +3,7 @@
     <string name="app_name">Taplink Demo</string>
     
     <!-- Main Page -->
+    <string name="connection_mode_label">Connection Mode</string>
     <string name="connection_status_connecting">Connecting...</string>
     <string name="connection_status_connected">Connected</string>
     <string name="connection_status_disconnected">Disconnected</string>
@@ -88,6 +89,9 @@
     
     <!-- Error Handling -->
     <string name="error_payment_title">Payment Error</string>
+    <string name="error_network_not_connected">Network Not Connected</string>
+    <string name="error_network_not_connected_message">Network is not connected. Please check your network connection and try again.</string>
+    <string name="error_network_check_failed">Network Check Failed</string>
     
     <!-- Error Action Buttons -->
     <string name="btn_retry">Retry</string>

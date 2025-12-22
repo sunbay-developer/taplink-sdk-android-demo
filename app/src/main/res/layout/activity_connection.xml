@@ -424,14 +424,14 @@
                 android:layout_marginBottom="16dp">
 
                 <Button
-                    android:id="@+id/btn_cancel"
+                    android:id="@+id/btn_exit_app"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_weight="1"
-                    android:text="@string/btn_cancel"
+                    android:text="@string/btn_exit_app"
                     android:textSize="16sp"
-                    android:textColor="#666666"
-                    android:background="#E0E0E0"
+                    android:textColor="#FFFFFF"
+                    android:background="#F44336"
                     android:layout_marginEnd="12dp"
                     android:elevation="2dp" />
 
@@ -451,16 +451,16 @@
             </LinearLayout>
 
             <!-- Exit Application Button -->
-            <Button
-                android:id="@+id/btn_exit_app"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:text="@string/btn_exit_app"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="#FFFFFF"
-                android:background="#F44336"
-                android:elevation="2dp" />
+<!--            <Button-->
+<!--                android:id="@+id/btn_exit_app"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="48dp"-->
+<!--                android:text="@string/btn_exit_app"-->
+<!--                android:textSize="16sp"-->
+<!--                android:textStyle="bold"-->
+<!--                android:textColor="#FFFFFF"-->
+<!--                android:background="#F44336"-->
+<!--                android:elevation="2dp" />-->
 
         </LinearLayout>
 

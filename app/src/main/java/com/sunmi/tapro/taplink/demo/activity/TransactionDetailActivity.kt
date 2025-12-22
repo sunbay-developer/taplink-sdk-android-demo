@@ -749,6 +749,12 @@ class TransactionDetailActivity : AppCompatActivity() {
                         )
                     }
                 }
+                
+                override fun onProgress(status: String, message: String) {
+                    runOnUiThread {
+                        progressDialog.setMessage(message)
+                    }
+                }
             }
         )
     }
@@ -857,6 +863,12 @@ class TransactionDetailActivity : AppCompatActivity() {
                         )
                     }
                 }
+                
+                override fun onProgress(status: String, message: String) {
+                    runOnUiThread {
+                        progressDialog.setMessage(message)
+                    }
+                }
             }
         )
     }
@@ -925,6 +937,12 @@ class TransactionDetailActivity : AppCompatActivity() {
                             onRetryWithSameId = { executeTipAdjust(tipAmount, transactionRequestId) },
                             onRetryWithNewId = { executeTipAdjust(tipAmount) }
                         )
+                    }
+                }
+                
+                override fun onProgress(status: String, message: String) {
+                    runOnUiThread {
+                        progressDialog.setMessage(message)
                     }
                 }
             }
@@ -998,6 +1016,12 @@ class TransactionDetailActivity : AppCompatActivity() {
                             onRetryWithSameId = { executeIncrementalAuth(incrementalAmount, transactionRequestId) },
                             onRetryWithNewId = { executeIncrementalAuth(incrementalAmount) }
                         )
+                    }
+                }
+                
+                override fun onProgress(status: String, message: String) {
+                    runOnUiThread {
+                        progressDialog.setMessage(message)
                     }
                 }
             }
@@ -1117,6 +1141,12 @@ class TransactionDetailActivity : AppCompatActivity() {
                         )
                     }
                 }
+                
+                override fun onProgress(status: String, message: String) {
+                    runOnUiThread {
+                        progressDialog.setMessage(message)
+                    }
+                }
             }
         )
     }
@@ -1152,6 +1182,12 @@ class TransactionDetailActivity : AppCompatActivity() {
                     runOnUiThread {
                         progressDialog.dismiss()
                         showErrorDialog("Query Failed", code, message)
+                    }
+                }
+                
+                override fun onProgress(status: String, message: String) {
+                    runOnUiThread {
+                        progressDialog.setMessage(message)
                     }
                 }
             }
@@ -1194,6 +1230,12 @@ class TransactionDetailActivity : AppCompatActivity() {
                     runOnUiThread {
                         progressDialog.dismiss()
                         showErrorDialog("Query Failed", code, message)
+                    }
+                }
+                
+                override fun onProgress(status: String, message: String) {
+                    runOnUiThread {
+                        progressDialog.setMessage(message)
                     }
                 }
             }

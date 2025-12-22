@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import com.google.gson.Gson
 
 /**
  * Enhanced error handling utility class for cross-device connection modes
@@ -41,15 +42,18 @@ object ErrorHandler {
             context = context,
             errorCode = errorCode,
             errorMessage = errorMessage,
-            canRetryWithSameId = canRetryWithSameId,
-            canRetryWithNewId = canRetryWithNewId,
             isTimeout = isTimeout,
-            onRetryWithSameId = onRetryWithSameId,
-            onRetryWithNewId = onRetryWithNewId,
             onQuery = onQuery,
             onCancel = onCancel
         )
     }
+
+    data class ErrorResponse(
+        val traceId: String,
+        val eventCode: String,
+        val errorCode: String,
+        val eventMsg: String
+    )
 
     /**
      * Show simple error dialog with original error message and retry options
@@ -58,11 +62,7 @@ object ErrorHandler {
         context: Context,
         errorCode: String,
         errorMessage: String,
-        canRetryWithSameId: Boolean,
-        canRetryWithNewId: Boolean,
         isTimeout: Boolean,
-        onRetryWithSameId: (() -> Unit)?,
-        onRetryWithNewId: (() -> Unit)?,
         onQuery: (() -> Unit)?,
         onCancel: (() -> Unit)?
     ) {
@@ -81,32 +81,7 @@ object ErrorHandler {
                 builder.setPositiveButton("Query Status") { _, _ ->
                     onQuery.invoke()
                 }
-                if (onRetryWithSameId != null) {
-                    builder.setNegativeButton("Retry") { _, _ ->
-                        onRetryWithSameId.invoke()
-                    }
-                }
                 builder.setNeutralButton("Cancel") { _, _ ->
-                    onCancel?.invoke()
-                }
-            }
-            
-            canRetryWithSameId && onRetryWithSameId != null -> {
-                // Temporary error - can retry with same ID
-                builder.setPositiveButton("Retry") { _, _ ->
-                    onRetryWithSameId.invoke()
-                }
-                builder.setNegativeButton("Cancel") { _, _ ->
-                    onCancel?.invoke()
-                }
-            }
-            
-            canRetryWithNewId && onRetryWithNewId != null -> {
-                // Definite failure - can retry with new ID
-                builder.setPositiveButton("Try Again") { _, _ ->
-                    onRetryWithNewId.invoke()
-                }
-                builder.setNegativeButton("Cancel") { _, _ ->
                     onCancel?.invoke()
                 }
             }

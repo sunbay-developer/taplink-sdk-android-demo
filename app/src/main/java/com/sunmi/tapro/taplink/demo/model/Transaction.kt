@@ -78,7 +78,7 @@ data class Transaction(
         return isSuccess() && (
             type == TransactionType.SALE ||
             type == TransactionType.AUTH ||
-//            type == TransactionType.FORCED_AUTH ||
+            type == TransactionType.REFUND ||
             type == TransactionType.POST_AUTH
         )
     }

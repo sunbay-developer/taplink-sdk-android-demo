@@ -49,15 +49,11 @@ class TaplinkDemoApplication : Application() {
                 }
                 com.sunmi.tapro.taplink.demo.util.ConnectionPreferences.ConnectionMode.CABLE -> {
                     Log.d(TAG, "Using saved mode: Cable")
-                    ConnectionMode.USB_AOA
+                    ConnectionMode.CABLE
                 }
                 com.sunmi.tapro.taplink.demo.util.ConnectionPreferences.ConnectionMode.LAN -> {
                     Log.d(TAG, "Using saved mode: LAN")
                     ConnectionMode.LAN
-                }
-                else -> {
-                    Log.d(TAG, "No saved mode or unsupported mode, defaulting to App-to-App")
-                    ConnectionMode.APP_TO_APP
                 }
             }
 

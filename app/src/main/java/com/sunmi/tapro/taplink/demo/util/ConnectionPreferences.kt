@@ -2,6 +2,7 @@ package com.sunmi.tapro.taplink.demo.util
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 
 /**
  * Connection configuration management utility class
@@ -10,6 +11,7 @@ import android.content.SharedPreferences
  * - Connection mode (App-to-App, Cable, LAN, Cloud)
  * - LAN mode IP address and port configuration
  * 
+ *
  * Uses SharedPreferences for persistent storage
  */
 object ConnectionPreferences {
@@ -49,9 +51,9 @@ object ConnectionPreferences {
      */
     fun saveConnectionMode(context: Context, mode: ConnectionMode) {
         getPreferences(context)
-            .edit()
-            .putString(KEY_MODE, mode.name)
-            .apply()
+            .edit {
+                putString(KEY_MODE, mode.name)
+            }
     }
     
     /**
@@ -80,10 +82,10 @@ object ConnectionPreferences {
      */
     fun saveLanConfig(context: Context, ip: String, port: Int) {
         getPreferences(context)
-            .edit()
-            .putString(KEY_LAN_IP, ip)
-            .putInt(KEY_LAN_PORT, port)
-            .apply()
+            .edit {
+                putString(KEY_LAN_IP, ip)
+                    .putInt(KEY_LAN_PORT, port)
+            }
     }
     
     /**
@@ -104,16 +106,6 @@ object ConnectionPreferences {
      */
     fun getLanPort(context: Context): Int {
         return getPreferences(context).getInt(KEY_LAN_PORT, DEFAULT_LAN_PORT)
-    }
-    
-    /**
-     * Get LAN TLS enabled status
-     * 
-     * @param context Android Context
-     * @return Whether TLS is enabled, default is true
-     */
-    fun getLanTlsEnabled(context: Context): Boolean {
-        return getPreferences(context).getBoolean(KEY_LAN_TLS_ENABLED, DEFAULT_LAN_TLS_ENABLED)
     }
     
     /**
@@ -148,9 +140,9 @@ object ConnectionPreferences {
      */
     fun clearAll(context: Context) {
         getPreferences(context)
-            .edit()
-            .clear()
-            .apply()
+            .edit {
+                clear()
+            }
     }
     
     /**
@@ -160,10 +152,10 @@ object ConnectionPreferences {
      */
     fun clearLanConfig(context: Context) {
         getPreferences(context)
-            .edit()
-            .remove(KEY_LAN_IP)
-            .remove(KEY_LAN_PORT)
-            .remove(KEY_LAN_TLS_ENABLED)
-            .apply()
+            .edit {
+                remove(KEY_LAN_IP)
+                    .remove(KEY_LAN_PORT)
+                    .remove(KEY_LAN_TLS_ENABLED)
+            }
     }
 }

@@ -1,5 +1,9 @@
 package com.sunmi.tapro.taplink.demo.util
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import java.util.regex.Pattern
 
 /**
@@ -8,6 +12,62 @@ import java.util.regex.Pattern
  * Provides network-related validation functions for LAN mode configuration
  */
 object NetworkUtils {
+    
+    /**
+     * Check if device is connected to network
+     * 
+     * @param context Android Context
+     * @return true if network is connected, false otherwise
+     */
+    fun isNetworkConnected(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val network = connectivityManager.activeNetwork ?: return false
+            val networkCapabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+            
+            networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+            networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) &&
+            (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+             networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+             networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET))
+        } else {
+            @Suppress("DEPRECATION")
+            val networkInfo = connectivityManager.activeNetworkInfo
+            networkInfo?.isConnected == true
+        }
+    }
+    
+    /**
+     * Get network connection type
+     * 
+     * @param context Android Context
+     * @return Network type string (WIFI, CELLULAR, ETHERNET, NONE)
+     */
+    fun getNetworkType(context: Context): String {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val network = connectivityManager.activeNetwork ?: return "NONE"
+            val networkCapabilities = connectivityManager.getNetworkCapabilities(network) ?: return "NONE"
+            
+            when {
+                networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> "WIFI"
+                networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> "CELLULAR"
+                networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> "ETHERNET"
+                else -> "UNKNOWN"
+            }
+        } else {
+            @Suppress("DEPRECATION")
+            val networkInfo = connectivityManager.activeNetworkInfo
+            when (networkInfo?.type) {
+                ConnectivityManager.TYPE_WIFI -> "WIFI"
+                ConnectivityManager.TYPE_MOBILE -> "CELLULAR"
+                ConnectivityManager.TYPE_ETHERNET -> "ETHERNET"
+                else -> "NONE"
+            }
+        }
+    }
     
     /**
      * Validate IP address format

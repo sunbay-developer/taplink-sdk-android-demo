@@ -197,6 +197,12 @@ class TransactionListActivity : AppCompatActivity() {
                         showToast("Query failed: $message")
                     }
                 }
+                
+                override fun onProgress(status: String, message: String) {
+                    runOnUiThread {
+                        progressDialog.setMessage(message)
+                    }
+                }
             }
         )
     }
@@ -569,6 +575,12 @@ class TransactionListActivity : AppCompatActivity() {
 
                         showToast("Batch close failed: $message")
                         loadTransactions()
+                    }
+                }
+                
+                override fun onProgress(status: String, message: String) {
+                    runOnUiThread {
+                        progressDialog.setMessage(message)
                     }
                 }
             }

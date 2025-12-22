@@ -66,9 +66,7 @@ class ConnectionActivity : AppCompatActivity() {
     // Error prompts
     private lateinit var cardConfigError: CardView
     private lateinit var tvConfigError: TextView
-    
-    // Buttons
-    private lateinit var btnCancel: Button
+
     private lateinit var btnConfirm: Button
     private lateinit var btnExitApp: Button
     
@@ -77,6 +75,10 @@ class ConnectionActivity : AppCompatActivity() {
     
     // Payment service
     private val paymentService = TaplinkPaymentService.getInstance()
+    
+    // Anti-duplicate click protection
+    private var lastClickTime: Long = 0
+    private val CLICK_INTERVAL: Long = 500 // 500ms interval
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,6 +96,18 @@ class ConnectionActivity : AppCompatActivity() {
     }
     
 
+    
+    /**
+     * Check if button can be clicked (prevent duplicate clicks)
+     */
+    private fun canClick(): Boolean {
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastClickTime > CLICK_INTERVAL) {
+            lastClickTime = currentTime
+            return true
+        }
+        return false
+    }
     
     /**
      * Initialize view components
@@ -125,7 +139,6 @@ class ConnectionActivity : AppCompatActivity() {
         tvConfigError = findViewById(R.id.tv_config_error)
         
         // Buttons
-        btnCancel = findViewById(R.id.btn_cancel)
         btnConfirm = findViewById(R.id.btn_confirm)
         btnExitApp = findViewById(R.id.btn_exit_app)
     }
@@ -169,7 +182,7 @@ class ConnectionActivity : AppCompatActivity() {
         etLanPort.setText(port.toString())
 //        switchTls.isChecked = false // LAN模式默认关闭TLS
         
-        Log.d(TAG, "Load LAN configuration - IP: $ip, Port: $port, TLS: false")
+        Log.d(TAG, "Load LAN configuration - IP: $ip, Port: $port")
     }
     
     /**
@@ -215,22 +228,20 @@ class ConnectionActivity : AppCompatActivity() {
             // Hide error prompt
             hideConfigError()
         }
-        
-        // Cancel button click listener
-        btnCancel.setOnClickListener {
-            Log.d(TAG, "User cancels configuration")
-            setResult(Activity.RESULT_CANCELED)
-            finish()
-        }
+
         
         // Confirm button click listener
         btnConfirm.setOnClickListener {
-            handleConfirm()
+            if (canClick()) {
+                handleConfirm()
+            }
         }
         
         // Exit app button click listener
         btnExitApp.setOnClickListener {
-            handleExitApp()
+            if (canClick()) {
+                handleExitApp()
+            }
         }
         
         // LAN configuration real-time validation listeners
@@ -453,8 +464,7 @@ class ConnectionActivity : AppCompatActivity() {
         // Show connecting status
         btnConfirm.text = "Connecting..."
         btnConfirm.isEnabled = false
-        btnCancel.isEnabled = false
-        
+
         // Disconnect current connection
         paymentService.disconnect()
         
@@ -472,6 +482,17 @@ class ConnectionActivity : AppCompatActivity() {
         Log.d(TAG, "=== SDK Re-initialization for Mode Switch ===")
         Log.d(TAG, "Target Mode: $selectedMode")
         
+        // Ensure SDK is completely disconnected before re-initialization
+        try {
+            Log.d(TAG, "Ensuring SDK is fully disconnected before re-initialization")
+            paymentService.disconnect()
+            
+            // Add a small delay to ensure complete disconnection
+            Thread.sleep(200)
+        } catch (e: Exception) {
+            Log.w(TAG, "Error during pre-initialization disconnect: ${e.message}")
+        }
+        
         // Re-initialize SDK for the new connection mode
         val reinitSuccess = paymentService.reinitializeForMode(this, selectedMode)
         if (!reinitSuccess) {
@@ -482,30 +503,35 @@ class ConnectionActivity : AppCompatActivity() {
         
         Log.d(TAG, "SDK re-initialized successfully for mode: $selectedMode")
         
-        // Connect to payment terminal with new mode
-        paymentService.connect(object : ConnectionListener {
-            override fun onConnected(deviceId: String, taproVersion: String) {
-                Log.d(TAG, "Mode switch connection successful - DeviceId: $deviceId, Version: $taproVersion")
-                runOnUiThread {
-                    showConnectionResult(true, "Connected (v$taproVersion)")
-                }
-            }
+        // Add a small delay before attempting connection to ensure SDK is ready
+        btnConfirm.postDelayed({
+            Log.d(TAG, "Starting connection attempt after SDK re-initialization")
             
-            override fun onDisconnected(reason: String) {
-                Log.d(TAG, "Mode switch connection disconnected - Reason: $reason")
-                runOnUiThread {
-                    showConnectionResult(false, "Connection disconnected: $reason")
+            // Connect to payment terminal with new mode
+            paymentService.connect(object : ConnectionListener {
+                override fun onConnected(deviceId: String, taproVersion: String) {
+                    Log.d(TAG, "Mode switch connection successful - DeviceId: $deviceId, Version: $taproVersion")
+                    runOnUiThread {
+                        showConnectionResult(true, "Connected (v$taproVersion)")
+                    }
                 }
-            }
-            
-            override fun onError(code: String, message: String) {
-                Log.e(TAG, "Mode switch connection failed - Code: $code, Message: $message")
-                runOnUiThread {
-                    val errorMsg = mapConnectionError(code, message)
-                    showConnectionResult(false, errorMsg)
+                
+                override fun onDisconnected(reason: String) {
+                    Log.d(TAG, "Mode switch connection disconnected - Reason: $reason")
+                    runOnUiThread {
+                        showConnectionResult(false, "Connection disconnected: $reason")
+                    }
                 }
-            }
-        })
+                
+                override fun onError(code: String, message: String) {
+                    Log.e(TAG, "Mode switch connection failed - Code: $code, Message: $message")
+                    runOnUiThread {
+                        val errorMsg = mapConnectionError(code, message)
+                        showConnectionResult(false, errorMsg)
+                    }
+                }
+            })
+        }, 300)
     }
     
     /**
@@ -542,7 +568,6 @@ class ConnectionActivity : AppCompatActivity() {
             
             btnConfirm.text = getString(R.string.btn_confirm)
             btnConfirm.isEnabled = true
-            btnCancel.isEnabled = true
         }
     }
     
@@ -561,7 +586,6 @@ class ConnectionActivity : AppCompatActivity() {
                     append("\n• Ensure both devices are on the same network")
                     append("\n• Verify IP address and port number")
                     append("\n• Check if Tapro service is running")
-                    append("\n• Try disabling TLS if connection fails")
                 }
                 ConnectionPreferences.ConnectionMode.CABLE -> {
                     append("\n\nTroubleshooting tips:")

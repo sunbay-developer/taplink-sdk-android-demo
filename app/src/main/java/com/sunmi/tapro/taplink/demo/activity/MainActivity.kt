@@ -48,6 +48,7 @@ class MainActivity : Activity() {
 
     // UI element references
     private lateinit var layoutTopBar: View
+    private lateinit var tvConnectionType: TextView
     private lateinit var tvConnectionStatus: TextView
     private lateinit var btnSettings: Button
     private lateinit var btnTransactionHistory: Button
@@ -134,6 +135,7 @@ class MainActivity : Activity() {
 
             // Top bar
             layoutTopBar = findViewById(R.id.layout_top_bar)
+            tvConnectionType = findViewById(R.id.tv_connection_type)
             tvConnectionStatus = findViewById(R.id.tv_connection_status)
             btnSettings = findViewById(R.id.btn_settings)
             btnTransactionHistory = findViewById(R.id.btn_transaction_history)
@@ -250,7 +252,7 @@ class MainActivity : Activity() {
                     
                     // Show brief toast for network changes
                     if (isWifi) {
-                        ErrorHandler.showToast(this@MainActivity, "WiFi connected - Good for LAN mode")
+//                        ErrorHandler.showToast(this@MainActivity, "WiFi connected - Good for LAN mode")
                     } else {
                         ErrorHandler.showToast(this@MainActivity, "Mobile network - LAN mode may not work")
                     }
@@ -370,10 +372,6 @@ class MainActivity : Activity() {
                 Log.d(TAG, "Auto-connecting with LAN mode")
                 attemptLanAutoConnection()
             }
-            else -> {
-                Log.w(TAG, "Unknown connection mode, defaulting to App-to-App")
-                connectToPaymentService()
-            }
         }
     }
     
@@ -399,7 +397,13 @@ class MainActivity : Activity() {
             override fun onConnected(deviceId: String, taproVersion: String) {
                 runOnUiThread {
                     Log.d(TAG, "LAN auto-connect successful - Device ID: $deviceId, Version: $taproVersion")
-                    updateConnectionStatus("Connected", true)
+                    // Display version info in connection status
+                    val statusText = if (taproVersion.isNotEmpty()) {
+                        "Connected (v$taproVersion)"
+                    } else {
+                        "Connected"
+                    }
+                    updateConnectionStatus(statusText, true)
                 }
             }
             
@@ -442,9 +446,7 @@ class MainActivity : Activity() {
         updateConnectionStatus("Connection Failed", false)
         
         // Show SDK error message in toast
-        val toastMsg = if (message.isNotEmpty()) {
-            message
-        } else {
+        val toastMsg = message.ifEmpty {
             "Auto-connect failed (Code: $code)"
         }
         ErrorHandler.showToast(this, toastMsg)
@@ -464,7 +466,13 @@ class MainActivity : Activity() {
             override fun onConnected(deviceId: String, taproVersion: String) {
                 runOnUiThread {
                     Log.d(TAG, "Connected - Device ID: $deviceId, Version: $taproVersion, Mode: $currentMode")
-                    updateConnectionStatus("Connected", true)
+                    // Display version info in connection status
+                    val statusText = if (taproVersion.isNotEmpty()) {
+                        "Connected (v$taproVersion)"
+                    } else {
+                        "Connected"
+                    }
+                    updateConnectionStatus(statusText, true)
                 }
             }
 
@@ -502,6 +510,16 @@ class MainActivity : Activity() {
      * Update connection status display with simple status information
      */
     private fun updateConnectionStatus(status: String, connected: Boolean) {
+        // Update connection mode display
+        val currentMode = ConnectionPreferences.getConnectionMode(this)
+        val modeText = when (currentMode) {
+            ConnectionPreferences.ConnectionMode.APP_TO_APP -> "App-to-App"
+            ConnectionPreferences.ConnectionMode.CABLE -> "Cable"
+            ConnectionPreferences.ConnectionMode.LAN -> "LAN"
+            else -> "Unknown Mode"
+        }
+        tvConnectionType.text = modeText
+        
         // Display simple status without additional details
         tvConnectionStatus.text = status
 
@@ -509,7 +527,7 @@ class MainActivity : Activity() {
         updateTransactionButtonsState()
         
         // Log status change for debugging
-        Log.d(TAG, "Connection status updated: $status (connected: $connected)")
+        Log.d(TAG, "Connection status updated: $modeText - $status (connected: $connected)")
     }
     
 
@@ -659,9 +677,6 @@ class MainActivity : Activity() {
         val added = TransactionRepository.addTransaction(transaction)
         Log.d(TAG, "Transaction added to repository: $added")
 
-        // Prompt user to launch Tapro app
-        showToast("Launch Tapro app for payment")
-
         // Execute SALE payment
         val callback = object : PaymentCallback {
             override fun onSuccess(result: PaymentResult) {
@@ -682,10 +697,10 @@ class MainActivity : Activity() {
                 runOnUiThread {
                     Log.d(TAG, "Payment progress callback: $message")
 
+                    // Only show generic message for very generic processing messages
                     val displayMessage = when {
-                        message.contains("processing", ignoreCase = true) ->
+                        message.matches(Regex(".*transaction processing\\.\\.\\.", RegexOption.IGNORE_CASE)) ->
                             "Payment processing, please complete in Tapro app"
-
                         else -> message
                     }
                     updatePaymentProgress(displayMessage)
@@ -753,9 +768,6 @@ class MainActivity : Activity() {
         val added = TransactionRepository.addTransaction(transaction)
         Log.d(TAG, "Transaction added to repository: $added")
 
-        // Prompt user to launch Tapro app
-        showToast("Launch Tapro app for payment")
-
         // Execute payment method based on transaction type
         val callback = object : PaymentCallback {
             override fun onSuccess(result: PaymentResult) {
@@ -776,11 +788,10 @@ class MainActivity : Activity() {
                     // Actual payment operations are performed in Tapro app
                     Log.d(TAG, "Payment progress callback: $message")
 
-                    // Display appropriate message for App-to-App mode
+                    // Only show generic message for very generic processing messages
                     val displayMessage = when {
-                        message.contains("processing", ignoreCase = true) ->
+                        message.matches(Regex(".*transaction processing\\.\\.\\.", RegexOption.IGNORE_CASE)) ->
                             "Payment processing, please complete in Tapro app"
-
                         else -> message
                     }
                     updatePaymentProgress(displayMessage)
@@ -1299,88 +1310,6 @@ class MainActivity : Activity() {
                     )
                     .setPositiveButton("OK", null)
                     .show()
-            }
-        }
-    }
-
-    /**
-     * Execute payment with specific transaction request ID
-     */
-    private fun executePaymentWithId(
-        transactionType: TransactionType,
-        transaction: Transaction
-    ) {
-        Log.d(
-            TAG,
-            "Executing payment with specific ID - Type: $transactionType, RequestId: ${transaction.transactionRequestId}"
-        )
-
-        val callback = object : PaymentCallback {
-            override fun onSuccess(result: PaymentResult) {
-                runOnUiThread {
-                    handlePaymentSuccess(result)
-                }
-            }
-
-            override fun onFailure(code: String, message: String) {
-                runOnUiThread {
-                    handlePaymentFailure(transaction.transactionRequestId, code, message)
-                }
-            }
-
-            override fun onProgress(status: String, message: String) {
-                runOnUiThread {
-                    updatePaymentProgress(message)
-                }
-            }
-        }
-
-        // Execute payment method based on transaction type
-        when (transactionType) {
-            TransactionType.SALE -> {
-                paymentService.executeSale(
-                    referenceOrderId = transaction.referenceOrderId,
-                    transactionRequestId = transaction.transactionRequestId,
-                    amount = transaction.amount,
-                    currency = transaction.currency,
-                    description = "Demo SALE Payment (Retry) - ${
-                        amountFormatter.format(
-                            transaction.amount
-                        )
-                    }",
-                    surchargeAmount = transaction.surchargeAmount,
-                    tipAmount = transaction.tipAmount,
-                    taxAmount = transaction.taxAmount,
-                    cashbackAmount = transaction.cashbackAmount,
-                    serviceFee = transaction.serviceFee,
-                    callback = callback
-                )
-            }
-
-            TransactionType.AUTH -> {
-                paymentService.executeAuth(
-                    referenceOrderId = transaction.referenceOrderId,
-                    transactionRequestId = transaction.transactionRequestId,
-                    amount = transaction.amount,
-                    currency = transaction.currency,
-                    description = "Demo AUTH Payment (Retry) - ${
-                        amountFormatter.format(
-                            transaction.amount
-                        )
-                    }",
-                    callback = callback
-                )
-            }
-
-            TransactionType.FORCED_AUTH -> {
-                // FORCED_AUTH requires an authorization code; here we use a sample code.
-                // In a real-world app, the user should be prompted to enter the authorization code.
-                showForcedAuthDialog(transaction.referenceOrderId, transaction.transactionRequestId, transaction, callback)
-            }
-
-            else -> {
-                showToast("Unsupported transaction type for retry: $transactionType")
-                hidePaymentProgressDialog()
             }
         }
     }
