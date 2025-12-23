@@ -17,8 +17,8 @@ TaplinkDemo 是由商米提供的支付 SDK 集成示例应用，演示如何使
   - 包含完整的支付功能演示
   - 支持 App-to-App 模式连接
 
-- **[Tapro [standalone] - preview_uat_v1.0.0.69(develop).apk](Tapro%20%5Bstandalone%5D%20-%20preview_uat_v1.0.0.69%28develop%29.apk)** - Tapro 支付终端应用
-  - 版本: v1.0.0.60 (develop)
+- **[Tapro [standalone] - preview_uat_v1.0.0.85(develop).apk](Tapro%20%5Bstandalone%5D%20-%20preview_uat_v1.0.0.85%28develop%29.apk)** - Tapro 支付终端应用
+  - 版本: v1.0.0.85 (develop)
   - **必须安装**: App-to-App 模式需要Tapro应用处理支付
   - 需要将设备 SN 绑定到 SUNBAY 平台才能正常使用
   - 与 TaplinkDemo 配合使用完成支付交易
@@ -51,8 +51,8 @@ TaplinkDemo 是由商米提供的支付 SDK 集成示例应用，演示如何使
 
 ### 连接模式
 - **App-to-App 模式** - 同设备集成（已实现）
-- **Cable 模式** - USB线缆连接（接口预留）
-- **LAN 模式** - 局域网连接（接口预留）
+- **Cable 模式** - USB线缆连接（已实现）
+- **LAN 模式** - 局域网连接（已实现）
 - **Cloud 模式** - 云端连接（接口预留）
 
 ### 技术特性
@@ -65,6 +65,9 @@ TaplinkDemo 是由商米提供的支付 SDK 集成示例应用，演示如何使
 - 智能重试机制
 - 错误处理和恢复
 - 交易金额详情支持（附加费、小费、税费、返现、服务费）
+- 多种连接模式支持（App-to-App、Cable、LAN）
+- 网络状态监控和设备可达性检测
+- 连接参数验证和配置管理
 
 ## 技术栈
 
@@ -77,7 +80,7 @@ TaplinkDemo 是由商米提供的支付 SDK 集成示例应用，演示如何使
 - **JVM Target**: 11
 
 ### 核心依赖
-- **Taplink SDK**: 1.0.1-SNAPSHOT
+- **Taplink SDK**: 1.0.1
 - **AndroidX Core KTX**: 1.16.0
 - **AndroidX AppCompat**: 1.7.1
 - **Material Components**: 1.12.0
@@ -85,6 +88,7 @@ TaplinkDemo 是由商米提供的支付 SDK 集成示例应用，演示如何使
 - **Kotlin Coroutines**: 1.8.1
 - **Lifecycle Runtime KTX**: 2.9.2
 - **Gson**: 2.13.1
+- **Java-WebSocket**: 1.5.3
 
 ## 项目结构
 
@@ -107,10 +111,12 @@ app/src/main/java/com/sunmi/tapro/taplink/demo/
 ├── service/                          # SDK 集成层
 │   ├── PaymentService.kt             # 支付服务接口
 │   └── TaplinkPaymentService.kt     # App-to-App 支付实现
-└── util/                             # 工具类
+├── util/                             # 工具类
     ├── ConnectionPreferences.kt      # 连接配置管理
     ├── ErrorHandler.kt               # 错误处理工具
-    └── RetryManager.kt               # 重试管理器
+    ├── RetryManager.kt               # 重试管理器
+    ├── NetworkUtils.kt               # 网络工具类
+    └── ConnectionStatusMonitor.kt    # 连接状态监控
 ```
 
 ### 资源目录结构
@@ -145,8 +151,8 @@ app/src/main/res/
   - 直接安装即可体验完整功能
 
 #### Tapro 支付终端应用
-- **Tapro应用APK**: [Tapro [standalone] - preview_check_v1.0.0.60(develop).apk](Tapro%20%5Bstandalone%5D%20-%20preview_check_v1.0.0.60%28develop%29.apk)
-  - 版本: v1.0.0.60 (develop)
+- **Tapro应用APK**: [Tapro [standalone] - preview_check_v1.0.0.85(develop).apk](Tapro%20%5Bstandalone%5D%20-%20preview_check_v1.0.0.85%28develop%29.apk)
+  - 版本: v1.0.0.85 (develop)
   - **重要**: 使用 App-to-App 模式必须安装此应用
   - 安装后需要将设备 SN 绑定到 SUNBAY 平台
   - 负责处理实际的支付交易操作
@@ -187,17 +193,21 @@ sdk.dir=/path/to/your/Android/sdk
 ```
 或在 Android Studio 中直接运行。
 
-## App-to-App 模式
+## 连接模式详解
 
-本演示应用当前实现了 **App-to-App 模式**，这是一种同设备集成解决方案：
+本演示应用实现了多种连接模式，支持不同的集成场景：
 
-### 工作原理
+### App-to-App 模式
+
+**同设备集成解决方案**，适用于单台设备运行商户应用和支付终端应用的场景。
+
+#### 工作原理
 1. **Demo App**（本应用）- 发起支付请求的商户应用
 2. **Tapro App** - 处理支付的终端应用
 3. 两个应用运行在同一台 Android 设备上
 4. 通过 Android Intent 机制进行通信
 
-### 支付流程
+#### 支付流程
 1. 用户在 Demo App 中选择金额和交易类型
 2. Demo App 通过 Intent 向 Tapro App 发送支付请求
 3. Tapro App 启动并处理支付
@@ -205,21 +215,83 @@ sdk.dir=/path/to/your/Android/sdk
 5. Tapro App 将结果返回给 Demo App
 6. Demo App 显示交易结果
 
-### 要求
+#### 要求
 - Demo App 和 Tapro App 必须安装在同一设备上
 - 应用必须使用兼容的证书签名
 - 有效的 Taplink SDK 凭据（appId、merchantId、secretKey）
 
+### Cable 模式
+
+**USB线缆连接模式**，适用于商户设备与独立支付终端通过USB线缆连接的场景。
+
+#### 支持的协议
+- **USB AOA** (Android Open Accessory 2.0) - Android设备作为配件模式
+- **USB VSP** (Virtual Serial Port/CDC-ACM) - USB虚拟串口通信
+- **RS232** - 标准串行通信协议
+- **自动检测** - SDK自动识别并选择最佳协议
+
+#### 工作原理
+1. 商户设备通过USB线缆连接到支付终端
+2. SDK自动检测连接类型和协议
+3. 建立串行通信通道
+4. 通过协议栈进行支付数据交换
+
+#### 配置要求
+- USB线缆物理连接
+- 支持的USB协议（AOA/VSP/RS232）
+- 正确的设备权限配置
+
+### LAN 模式
+
+**局域网连接模式**，适用于商户设备与支付终端在同一网络环境下通过IP网络通信的场景。
+
+#### 工作原理
+1. 商户设备和支付终端连接到同一局域网
+2. 通过IP地址和端口建立TCP连接
+3. 使用WebSocket或HTTP协议进行通信
+4. 支持设备自动发现和手动配置
+
+#### 配置参数
+- **IP地址** - 支付终端的局域网IP地址
+- **端口** - 通信端口（默认8443）
+- **网络类型** - WiFi、以太网或移动网络
+
+#### 网络要求
+- 设备必须连接到网络（WiFi/以太网/移动网络）
+- 商户设备和支付终端在同一网络段
+- 网络防火墙允许相应端口通信
+- 稳定的网络连接以确保交易可靠性
+
+#### 自动连接功能
+- **设备发现** - 自动扫描网络中的支付终端
+- **配置缓存** - 保存成功连接的设备信息
+- **智能重连** - 网络恢复后自动重新连接
+- **连接监控** - 实时监控网络状态和设备可达性
+
 ## 权限要求
 
-应用需要以下权限：
-- `INTERNET` - 网络访问
-- `ACCESS_NETWORK_STATE` - 网络状态检测
-- `ACCESS_WIFI_STATE` - WiFi 状态检测
-- `CHANGE_WIFI_STATE` - WiFi 状态修改
+应用需要以下权限以支持不同的连接模式：
+
+### 基础权限
+- `INTERNET` - 网络访问（LAN模式必需）
+- `ACCESS_NETWORK_STATE` - 网络状态检测（LAN模式必需）
+- `ACCESS_WIFI_STATE` - WiFi状态检测（LAN模式推荐）
+- `CHANGE_WIFI_STATE` - WiFi状态修改（LAN模式可选）
+
+### USB连接权限（Cable模式）
+- `USB_PERMISSION` - USB设备访问
+- `HARDWARE_USB_HOST` - USB主机模式支持
+- `HARDWARE_USB_ACCESSORY` - USB配件模式支持
+
+### 蓝牙权限（未来扩展）
 - `BLUETOOTH` - 蓝牙访问
 - `BLUETOOTH_ADMIN` - 蓝牙管理
-- `USB_PERMISSION` - USB 设备访问
+
+### 权限说明
+- **网络权限** - LAN模式需要访问网络进行TCP通信
+- **USB权限** - Cable模式需要访问USB设备进行串行通信
+- **WiFi权限** - 用于网络状态监控和连接管理
+- **蓝牙权限** - 为未来的蓝牙连接模式预留
 
 ## 使用说明
 
@@ -296,9 +368,14 @@ class TaplinkDemoApplication : Application() {
 ### 5. 连接设置
 
 - 点击主页面的"设置"按钮
-- 选择连接模式（当前仅实现 App-to-App）
-- 根据需要配置连接参数
-- 保存并重新连接
+- 选择连接模式：
+  - **App-to-App** - 同设备集成（默认）
+  - **Cable** - USB线缆连接
+  - **LAN** - 局域网连接
+- 根据选择的模式配置相应参数：
+  - **LAN模式** - 输入支付终端IP地址和端口
+  - **Cable模式** - 选择USB协议类型（自动检测/AOA/VSP/RS232）
+- 保存配置并重新连接
 
 ### 6. 高级功能
 
@@ -320,6 +397,92 @@ class TaplinkDemoApplication : Application() {
 - 支持最多 3 次重试，带指数退避延迟
 
 
+
+## 连接模式配置指南
+
+### App-to-App 模式配置
+
+**适用场景**：单台设备运行商户应用和支付终端应用
+
+#### 配置步骤
+1. 确保已安装 Tapro 支付终端应用
+2. 在连接设置中选择"App-to-App"模式
+3. 点击"确认"保存配置
+4. 应用将自动尝试连接到 Tapro 应用
+
+#### 故障排除
+- 确保 Tapro 应用已正确安装
+- 检查应用签名是否兼容
+- 验证 SDK 凭据配置
+
+### Cable 模式配置
+
+**适用场景**：商户设备通过USB线缆连接到独立支付终端
+
+#### 配置步骤
+1. 使用USB线缆连接商户设备和支付终端
+2. 在连接设置中选择"Cable"模式
+3. 选择USB协议类型：
+   - **自动检测**（推荐）- SDK自动选择最佳协议
+   - **USB AOA** - Android Open Accessory 2.0
+   - **USB VSP** - Virtual Serial Port (CDC-ACM)
+   - **RS232** - 标准串行通信
+4. 点击"确认"保存配置并连接
+
+#### 支持的连接类型
+- **USB AOA 2.0** - 适用于支持AOA协议的Android设备
+- **USB VSP** - 适用于CDC-ACM虚拟串口设备
+- **RS232** - 适用于传统串行通信设备
+
+#### 故障排除
+- 检查USB线缆连接状态
+- 确认设备USB权限
+- 尝试不同的协议类型
+- 重新插拔USB连接
+
+### LAN 模式配置
+
+**适用场景**：商户设备和支付终端在同一局域网环境
+
+#### 首次配置
+1. 确保商户设备已连接到网络
+2. 在连接设置中选择"LAN"模式
+3. 输入支付终端配置：
+   - **IP地址** - 支付终端的局域网IP（如：192.168.1.100）
+   - **端口** - 通信端口（默认：8443）
+4. 点击"确认"保存配置并连接
+
+#### 自动连接
+- 应用会记住成功连接的设备信息
+- 下次启动时自动尝试连接到已保存的设备
+- 支持网络恢复后自动重连
+
+#### 网络要求
+- **网络连接** - WiFi、以太网或移动网络
+- **网络段** - 设备必须在同一网络段
+- **端口开放** - 防火墙允许指定端口通信
+- **网络稳定性** - 建议使用稳定的网络连接
+
+#### 故障排除
+- 检查网络连接状态
+- 验证IP地址和端口配置
+- 测试设备网络可达性
+- 检查防火墙设置
+- 尝试重新配置网络参数
+
+### 连接模式切换
+
+#### 切换步骤
+1. 进入"连接设置"页面
+2. 选择新的连接模式
+3. 配置相应的连接参数
+4. 点击"确认"应用新配置
+5. 应用将断开当前连接并使用新模式重新连接
+
+#### 注意事项
+- 切换连接模式会断开当前连接
+- 确保新模式的硬件和网络环境已准备就绪
+- 建议在无交易进行时切换连接模式
 
 ## 开发指南
 
@@ -468,24 +631,55 @@ A:
 - 验证操作权限和金额限制
 - 查看错误日志获取具体原因
 
+### Q: LAN模式连接失败？
+A: 
+- 确保设备已连接到网络（WiFi/以太网）
+- 验证商户设备和支付终端在同一网络段
+- 检查IP地址和端口配置是否正确
+- 确认网络防火墙允许相应端口通信
+- 使用网络工具测试设备可达性
+
+### Q: Cable模式无法识别设备？
+A: 
+- 检查USB线缆连接是否牢固
+- 确认设备支持所选的USB协议
+- 尝试使用自动检测模式
+- 检查设备USB权限设置
+- 重新插拔USB线缆并重试连接
+
+### Q: 网络连接不稳定？
+A: 
+- 检查WiFi信号强度和网络质量
+- 尝试切换到以太网连接
+- 确认路由器和网络设备工作正常
+- 检查网络延迟和丢包情况
+- 考虑使用有线连接提高稳定性
+
 ## 版本历史
 
 ### v1.0.0 (当前版本)
 - 初始版本发布
-- App-to-App 连接模式实现
-- 支持 Sale 和 Auth 交易
-- 支持完整的后续交易操作（REFUND、VOID、POST_AUTH、INCREMENTAL_AUTH、TIP_ADJUST）
-- 交易历史管理
-- 查询交易状态
-- 批次结算功能
-- 连接配置管理
-- 智能重试机制
-- 附加金额支持（附加费、小费、税费、返现、服务费）
-- 错误处理和恢复机制
-- 集成 Taplink SDK 1.0.1-SNAPSHOT
+- **多连接模式支持**：
+  - App-to-App 连接模式实现
+  - Cable 连接模式实现（USB AOA/VSP/RS232）
+  - LAN 连接模式实现（局域网TCP通信）
+- **完整交易功能**：
+  - 支持 Sale 和 Auth 交易
+  - 支持完整的后续交易操作（REFUND、VOID、POST_AUTH、INCREMENTAL_AUTH、TIP_ADJUST）
+  - 查询交易状态和批次结算功能
+- **高级功能**：
+  - 交易历史管理
+  - 智能重试机制
+  - 附加金额支持（附加费、小费、税费、返现、服务费）
+  - 错误处理和恢复机制
+- **网络功能**：
+  - 网络状态监控
+  - 设备可达性检测
+  - 连接参数验证
+  - 自动重连机制
+- 集成 Taplink SDK 1.0.1
 
 ### 开发中的功能
-- Cable 模式连接
-- LAN 模式连接  
 - Cloud 模式连接
 - 更多支付方式支持
+- 高级网络配置选项
