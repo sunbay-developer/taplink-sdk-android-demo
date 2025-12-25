@@ -131,7 +131,9 @@ class TaplinkPaymentService : PaymentService {
      */
     override fun connect(listener: ConnectionListener) {
         this.connectionListener = listener
-
+        
+        Log.d(TAG, "=== connect() called ===")
+        Log.d(TAG, "ConnectionListener set: ${listener != null}")
         Log.d(TAG, "Connecting with mode: $currentMode")
 
         // Check network for LAN mode
@@ -246,8 +248,28 @@ class TaplinkPaymentService : PaymentService {
         connectedDeviceId = deviceId
         taproVersion = version
 
-        Log.d(TAG, "Connected - Device: $deviceId, Version: $version")
-        connectionListener?.onConnected(deviceId, version)
+        Log.d(TAG, "=== handleConnected called ===")
+        Log.d(TAG, "Device ID: $deviceId, Version: $version")
+        Log.d(TAG, "connectionListener is null: ${connectionListener == null}")
+        Log.d(TAG, "Current thread: ${Thread.currentThread().name}")
+        
+        // Direct call without Handler to test
+        Log.d(TAG, "About to call connectionListener.onConnected directly")
+        Log.d(TAG, "connectionListener object: $connectionListener")
+        
+        try {
+            connectionListener?.let { listener ->
+                Log.d(TAG, "Calling listener.onConnected($deviceId, $version)")
+                listener.onConnected(deviceId, version)
+                Log.d(TAG, "listener.onConnected call completed successfully")
+            } ?: run {
+                Log.w(TAG, "connectionListener is null, cannot call onConnected")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Exception in connectionListener.onConnected", e)
+        }
+        
+        Log.d(TAG, "=== handleConnected completed ===")
     }
 
     /**
