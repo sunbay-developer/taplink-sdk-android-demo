@@ -117,27 +117,26 @@ class TaplinkDemoApplication : Application() {
 
                 // loading: Execute sale immediately after connection success
                 Log.d(TAG, "Connection successful, executing repeated SALE transactions (Loading)")
-                
+                executeSale()
                 // Create new thread to execute sale transaction repeatedly
-                Thread {
-                    Log.d(TAG, "Starting repeated SALE transactions in background thread")
-                    for (index in 0 until 10) {
-                        Log.d(TAG, "Executing SALE transaction #${index + 1}/10")
-                        executeSale()
-
-                        // Wait 50ms before next execution (except for the last one)
-                        if (index < 9) {
-                            try {
-                                Thread.sleep(50)
-                            } catch (e: InterruptedException) {
-                                Log.w(TAG, "Thread interrupted during sleep", e)
-                                Thread.currentThread().interrupt()
-                                break
-                            }
-                        }
-                    }
-                    Log.d(TAG, "Completed all 10 SALE transactions")
-                }.start()
+//                Thread {
+//                    Log.d(TAG, "Starting repeated SALE transactions in background thread")
+//                    for (index in 0 until 10) {
+//                        Log.d(TAG, "Executing SALE transaction #${index + 1}/10")
+//
+//                        // Wait 50ms before next execution (except for the last one)
+//                        if (index < 9) {
+//                            try {
+//                                Thread.sleep(50)
+//                            } catch (e: InterruptedException) {
+//                                Log.w(TAG, "Thread interrupted during sleep", e)
+//                                Thread.currentThread().interrupt()
+//                                break
+//                            }
+//                        }
+//                    }
+//                    Log.d(TAG, "Completed all 10 SALE transactions")
+//                }.start()
             }
 
             override fun onDisconnected(reason: String) {
